@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Admin — Renatta Premium Pet [MOCKUP]</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #D62828;
+  --red-dark: #A31E1E;
+  --yellow: #F4B731;
+  --yellow-soft: #FCE9B6;
+  --black: #1A1A1A;
+  --white: #FFFFFF;
+  --gray-soft: #F4F4F4;
+  --gray-bg: #FAFAFA;
+  --gray-line: #E2E2E2;
+  --gray: #6B6B6B;
+  --gray-dark: #444;
+  --green: #1FAD55;
+  --orange: #F39C12;
+  --shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--gray-bg);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--black);
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; cursor: pointer; border: none; }
+input, select { font-family: inherit; }
+img { display: block; max-width: 100%; }
+
+/* === DEMO BANNER === */
+.demo-banner {
+  background: repeating-linear-gradient(45deg, #1A1A1A, #1A1A1A 12px, #2a2a2a 12px, #2a2a2a 24px);
+  color: var(--yellow);
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+.demo-banner b { color: var(--white); }
+
+/* === HEADER === */
+header.brand-header {
+  background: var(--red);
+  color: var(--white);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow);
+}
+.brand-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand-logo-mini {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--white);
+  padding: 3px;
+}
+.brand-text h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  margin: 0;
+}
+.brand-text p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.9;
+}
+.brand-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.user-chip {
+  background: rgba(255,255,255,0.16);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.btn-logout {
+  background: rgba(0,0,0,0.18);
+  color: var(--white);
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.btn-logout:hover { background: rgba(0,0,0,0.3); }
+
+/* === TABS === */
+.tabs {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-line);
+  padding: 0 24px;
+  display: flex;
+  gap: 4px;
+}
+.tab {
+  background: transparent;
+  padding: 14px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray);
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  position: relative;
+}
+.tab:hover { color: var(--black); }
+.tab.active {
+  color: var(--red);
+  border-bottom-color: var(--red);
+}
+.tab .pill {
+  position: absolute;
+  top: 8px;
+  right: 4px;
+  background: var(--yellow);
+  color: var(--black);
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+/* === MAIN === */
+main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* === ACTION BAR === */
+.action-bar {
+  background: var(--white);
+  border: 1px solid var(--gray-line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.action-bar .search {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+.action-bar .search input {
+  width: 100%;
+  padding: 9px 14px 9px 38px;
+  border: 1px solid var(--gray-line);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.action-bar .search input:focus { border-color: var(--red); }
+.action-bar .search::before {
+  content: "🔍";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  pointer-events: none;
+}
+.filter-select {
+  padding: 9px 14px;
+  border: 1px solid var(--gray-line);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--white);
+  cursor: pointer;
+  outline: none;
+  min-width: 180px;
+}
+.btn-primary {
+  background: var(--red);
+  color: var(--white);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-primary:hover { background: var(--red-dark); }
+.btn-ghost {
+  background: transparent;
+  color: var(--gray-dark);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.btn-ghost:hover { background: var(--gray-soft); }
+
+/* === STATS LINE === */
+.stats-line {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 14px;
+  padding: 0 4px;
+  font-size: 13px;
+  color: var(--gray);
+}
+.stats-line b { color: var(--black); font-weight: 600; }
+
+/* === TABLE === */
+.products-table {
+  background: var(--white);
+  border: 1px solid var(--gray-line);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.table-head {
+  display: grid;
+  grid-template-columns: 70px 2.2fr 110px 1.5fr 120px 130px 110px;
+  padding: 12px 16px;
+  background: var(--gray-soft);
+  border-bottom: 1px solid var(--gray-line);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  align-items: center;
+}
+.product-row {
+  display: grid;
+  grid-template-columns: 70px 2.2fr 110px 1.5fr 120px 130px 110px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gray-line);
+  align-items: center;
+  gap: 8px;
+  transition: background 0.1s;
+}
+.product-row:last-child { border-bottom: none; }
+.product-row:hover { background: #fffbf4; }
+.product-row.no-stock-row { opacity: 0.65; }
+
+.thumb {
+  width: 54px;
+  height: 54px;
+  background: var(--gray-soft);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  border: 1px solid var(--gray-line);
+}
+.thumb img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+.thumb.no-photo { background: var(--yellow-soft); }
+.thumb.no-photo svg { width: 70%; height: 70%; }
+.thumb .hover-edit {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.thumb:hover .hover-edit { opacity: 1; }
+
+.cell-name { font-weight: 500; font-size: 14px; line-height: 1.3; cursor: text; padding: 2px 4px; border-radius: 4px; transition: background 0.1s; }
+.cell-name:hover { background: var(--gray-soft); }
+.cell-name.editing { background: var(--white); }
+.cell-name input {
+  border: 1px solid var(--red);
+  padding: 4px 8px;
+  width: 100%;
+  font-size: 14px;
+  outline: none;
+  border-radius: 4px;
+}
+
+.cell-code {
+  font-family: 'SFMono-Regular', Menlo, monospace;
+  font-size: 12px;
+  background: var(--gray-soft);
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--gray-dark);
+  display: inline-block;
+  font-weight: 500;
+}
+
+.cell-cat select {
+  width: 100%;
+  padding: 5px 8px;
+  font-size: 13px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.cell-cat select:hover { border-color: var(--gray-line); background: var(--white); }
+.cell-cat select:focus { border-color: var(--red); background: var(--white); outline: none; }
+
+.cell-price {
+  font-weight: 700;
+  color: var(--red);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  cursor: text;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.cell-price.consult { color: var(--gray); font-size: 13px; }
+.cell-price:hover { background: var(--gray-soft); }
+.cell-price input {
+  border: 1px solid var(--red);
+  padding: 4px 8px;
+  width: 100%;
+  font-size: 14px;
+  outline: none;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.stock-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.stock-toggle.available {
+  background: #E8F8EE;
+  color: #1FAD55;
+}
+.stock-toggle.no-stock {
+  background: #FDE8E8;
+  color: var(--red);
+}
+.stock-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+.row-actions { display: flex; gap: 4px; justify-content: flex-end; }
+.icon-btn {
+  background: transparent;
+  border-radius: 6px;
+  padding: 7px;
+  color: var(--gray-dark);
+  transition: background 0.15s, color 0.15s;
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn:hover { background: var(--gray-soft); }
+.icon-btn.danger:hover { background: #FDE8E8; color: var(--red); }
+
+/* === EMPTY === */
+.empty-state {
+  background: var(--white);
+  border: 1px dashed var(--gray-line);
+  border-radius: 12px;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--gray);
+}
+.empty-state h3 { font-family: 'Fredoka', sans-serif; color: var(--black); margin: 0 0 6px; }
+
+/* === MODAL === */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.modal-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--gray-line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h2 {
+  font-family: 'Fredoka', sans-serif;
+  margin: 0;
+  font-size: 19px;
+}
+.modal-close {
+  background: transparent;
+  color: var(--gray);
+  font-size: 24px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-close:hover { background: var(--gray-soft); }
+.modal-body { padding: 22px; }
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--gray-dark);
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--gray-line);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--red); }
+.field .hint { font-size: 11px; color: var(--gray); margin-top: 4px; }
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.upload-zone {
+  border: 2px dashed var(--gray-line);
+  border-radius: 10px;
+  padding: 22px;
+  text-align: center;
+  background: var(--gray-soft);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.upload-zone:hover { border-color: var(--red); background: #fff8f6; }
+.upload-zone .ico { font-size: 28px; opacity: 0.6; margin-bottom: 6px; }
+.upload-zone .lbl { font-size: 13px; font-weight: 600; color: var(--gray-dark); }
+.upload-zone .hint { font-size: 11px; color: var(--gray); margin-top: 4px; }
+.upload-zone img.preview { max-height: 100px; margin: 0 auto; }
+
+.modal-footer {
+  padding: 16px 22px;
+  border-top: 1px solid var(--gray-line);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.confirm-msg {
+  text-align: center;
+  padding: 8px 0 22px;
+  font-size: 15px;
+  color: var(--gray-dark);
+}
+.confirm-msg b { color: var(--black); }
+.confirm-msg .warn {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--red);
+  background: #FDE8E8;
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+/* === TOAST === */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(40px);
+  background: var(--black);
+  color: var(--white);
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  transition: all 0.25s ease;
+  pointer-events: none;
+  z-index: 200;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+
+
+.pagination { display: flex; justify-content: center; gap: 6px; margin-top: 16px; padding: 8px; }
+.pagination button { padding: 6px 12px; border: 1px solid var(--gray-line); border-radius: 6px; background: var(--white); font-size: 13px; font-weight: 500; color: var(--gray-dark); transition: all 0.15s; min-width: 36px; }
+.pagination button:hover:not(:disabled) { background: var(--gray-soft); }
+.pagination button.active { background: var(--red); color: var(--white); border-color: var(--red); }
+.pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+.pagination .info { padding: 6px 12px; color: var(--gray); font-size: 13px; }
+
+@media (max-width: 900px) {
+  .table-head, .product-row {
+    grid-template-columns: 60px 1fr;
+    gap: 12px;
+  }
+  .table-head .h-cat, .table-head .h-code, .table-head .h-cat,
+  .product-row .cell-code, .product-row .cell-cat, .product-row .cell-price-wrap, .product-row .cell-stock {
+    grid-column: 2;
+  }
+  .product-row { padding: 14px; }
+  main { padding: 14px; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="paws" viewBox="0 0 100 100">
+    <g fill="#F4B731" stroke="#A31E1E" stroke-width="1.2">
+      <ellipse cx="32" cy="68" rx="13" ry="16"/>
+      <circle cx="20" cy="50" r="5.5"/>
+      <circle cx="32" cy="44" r="5.5"/>
+      <circle cx="44" cy="50" r="5.5"/>
+      <circle cx="50" cy="62" r="4.5"/>
+    </g>
+    <g fill="#F4B731" stroke="#A31E1E" stroke-width="1.2">
+      <ellipse cx="70" cy="40" rx="13" ry="16"/>
+      <circle cx="58" cy="22" r="5.5"/>
+      <circle cx="70" cy="16" r="5.5"/>
+      <circle cx="82" cy="22" r="5.5"/>
+      <circle cx="88" cy="34" r="4.5"/>
+    </g>
+  </symbol>
+</svg>
+
+<div class="demo-banner">
+  🎭 <b>MODO DEMO</b> · Estás viendo el mockup del panel admin · Tus cambios se guardan solo en el navegador y podés resetear cuando quieras
+  <button onclick="resetDemo()" style="background:rgba(255,255,255,0.18);color:var(--white);padding:3px 10px;border-radius:6px;font-size:11px;margin-left:10px;font-weight:600">Resetear demo</button>
+</div>
+
+<header class="brand-header">
+  <div class="brand-left">
+    <img src="logo.png" class="brand-logo-mini" alt="Renatta" onerror="this.style.display='none'">
+    <div class="brand-text">
+      <h1>Panel Admin · Renatta</h1>
+      <p>Gestión del catálogo</p>
+    </div>
+  </div>
+  <div class="brand-right">
+    <span class="user-chip">👤 Renatta</span>
+    <button class="btn-logout">Cerrar sesión</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active">📦 Productos</button>
+  <button class="tab" onclick="location.href=&apos;dashboard-mockup.html&apos;">📊 Dashboard</button>
+</nav>
+
+<main>
+  <div class="action-bar">
+    <div class="search"><input id="search" type="text" placeholder="Buscar por nombre o código…"></div>
+    <select id="filter-cat" class="filter-select">
+      <option value="">Todas las categorías</option>
+      <option>Juguetes y Rascadores</option>
+      <option>Camas y Ropa</option>
+      <option>Higiene y Peluquería</option>
+      <option>Paseo y Transporte</option>
+      <option>Plásticos y Comederos</option>
+      <option>Snacks y Varios</option>
+    </select>
+    <button class="btn-ghost" onclick="exportCSV()" title="Descargar CSV">📥 Exportar CSV</button>
+    <button class="btn-primary" onclick="openAddModal()">＋ Agregar producto</button>
+  </div>
+
+  <div class="stats-line" id="stats">
+    <span>📦 <b id="s-total">0</b> productos</span>
+    <span>📷 <b id="s-photo">0</b> con foto</span>
+    <span>✅ <b id="s-stock">0</b> disponibles</span>
+    <span>❌ <b id="s-nostock">0</b> sin stock</span>
+  </div>
+
+  <div class="products-table">
+    <div class="table-head">
+      <div></div>
+      <div>Nombre</div>
+      <div class="h-code">Código</div>
+      <div class="h-cat">Categoría</div>
+      <div>Precio</div>
+      <div>Stock</div>
+      <div style="text-align:right">Acciones</div>
+    </div>
+    <div id="rows"></div>
+  </div>
+  <div class="pagination" id="pagination"></div>
+  <div style="display:none">
+  </div>
+
+  </div>
+  <p style="margin:20px 4px 0;font-size:12px;color:var(--gray)">
+    💡 Tip: tocá el <b>nombre</b> o el <b>precio</b> para editarlos en línea. La categoría y el stock se cambian con un click. Los cambios se guardan automáticamente.
+  </p>
+</main>
+
+<!-- Modal: Agregar/Editar -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">＋ Nuevo producto</h2>
+      <button class="modal-close" onclick="closeAddModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Nombre del producto</label>
+        <input id="f-name" type="text" placeholder="Ej: Peluche Conejo Mediano">
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Código de artículo</label>
+          <input id="f-code" type="text" placeholder="Ej: PCM">
+          <div class="hint">Único. Letras y/o números, sin espacios.</div>
+        </div>
+        <div class="field">
+          <label>Categoría</label>
+          <select id="f-cat">
+            <option>Juguetes y Rascadores</option>
+            <option>Camas y Ropa</option>
+            <option>Higiene y Peluquería</option>
+            <option>Paseo y Transporte</option>
+            <option>Plásticos y Comederos</option>
+            <option>Snacks y Varios</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Precio</label>
+          <input id="f-price" type="text" placeholder="Ej: 5990 (sin $)" inputmode="decimal">
+          <div class="hint">Vacío = "Consultar precio"</div>
+        </div>
+        <div class="field">
+          <label>Stock</label>
+          <select id="f-stock">
+            <option value="false">✅ Disponible</option>
+            <option value="true">❌ Sin stock</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Foto del producto</label>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('f-photo').click()">
+          <input id="f-photo" type="file" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+          <div id="upload-default">
+            <div class="ico">📷</div>
+            <div class="lbl">Tocá para subir una foto</div>
+            <div class="hint">JPG o PNG, idealmente cuadrada · Sin foto = patitas</div>
+          </div>
+          <img id="upload-preview" class="preview" style="display:none">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeAddModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveProduct()">Guardar producto</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar eliminación -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <h2>🗑 Eliminar producto</h2>
+      <button class="modal-close" onclick="closeDeleteModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-msg">
+        ¿Eliminar <b id="del-name">—</b> del catálogo?<br>
+        <span class="warn">Esta acción no se puede deshacer.</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeDeleteModal()">Cancelar</button>
+      <button class="btn-primary" style="background:var(--red)" onclick="confirmDelete()">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PAWS = '<svg viewBox="0 0 100 100"><use href="#paws"/></svg>';
+const CATS = ["Juguetes y Rascadores", "Camas y Ropa", "Higiene y Peluquer\u00eda", "Paseo y Transporte", "Pl\u00e1sticos y Comederos", "Snacks y Varios"];
+const ORIGINAL = [{"code":"214","code_safe":"214","name":"Bandeja Sanitaria Chica","category":"Plásticos y Comederos","price":2308.6,"photo":"png","no_stock":false},{"code":"211","code_safe":"211","name":"Cazuela huella mini","category":"Plásticos y Comederos","price":699.82,"photo":"png","no_stock":false},{"code":"212","code_safe":"212","name":"Cazuela huella mediana","category":"Plásticos y Comederos","price":1220.0,"photo":"png","no_stock":false},{"code":"216","code_safe":"216","name":"Bandeja Sanitaria Jumbo","category":"Plásticos y Comederos","price":5740.0,"photo":"png","no_stock":false},{"code":"201","code_safe":"201","name":"Comedero mini","category":"Plásticos y Comederos","price":423.5,"photo":"png","no_stock":false},{"code":"202","code_safe":"202","name":"Comedero chico","category":"Plásticos y Comederos","price":609.66,"photo":"png","no_stock":false},{"code":"204","code_safe":"204","name":"Comedero cocker","category":"Plásticos y Comederos","price":1155.88,"photo":"png","no_stock":false},{"code":"205","code_safe":"205","name":"Comedero ovejero","category":"Plásticos y Comederos","price":1413.0,"photo":null,"no_stock":false},{"code":"206","code_safe":"206","name":"Comedero regu-diet","category":"Plásticos y Comederos","price":3598.75,"photo":"png","no_stock":false},{"code":"207","code_safe":"207","name":"Comedero doble","category":"Plásticos y Comederos","price":1961.0,"photo":"png","no_stock":false},{"code":"209","code_safe":"209","name":"Bebedero con tolva","category":"Plásticos y Comederos","price":6107.0,"photo":"png","no_stock":false},{"code":"208","code_safe":"208","name":"Comedero con tolva","category":"Plásticos y Comederos","price":6107.0,"photo":"png","no_stock":false},{"code":"217","code_safe":"217","name":"Kit sanitario chico","category":"Plásticos y Comederos","price":3790.0,"photo":"png","no_stock":false},{"code":"218","code_safe":"218","name":"Kit sanitario mediano","category":"Plásticos y Comederos","price":4113.0,"photo":"png","no_stock":false},{"code":"219","code_safe":"219","name":"Kit sanitario jumbo","category":"Plásticos y Comederos","price":7059.0,"photo":"png","no_stock":false},{"code":"221","code_safe":"221","name":"Kit cachorro","category":"Plásticos y Comederos","price":2894.0,"photo":"png","no_stock":false},{"code":"222","code_safe":"222","name":"Kit adulto","category":"Plásticos y Comederos","price":6412.6,"photo":"png","no_stock":false},{"code":"223","code_safe":"223","name":"Kit grande","category":"Plásticos y Comederos","price":9980.0,"photo":"png","no_stock":false},{"code":"220","code_safe":"220","name":"Palita sanitaria grande","category":"Plásticos y Comederos","price":390.22,"photo":"png","no_stock":false},{"code":"250","code_safe":"250","name":"Bandeja mediana","category":"Plásticos y Comederos","price":2645.0,"photo":"png","no_stock":false},{"code":"233","code_safe":"233","name":"Bandeja mediana único color","category":"Plásticos y Comederos","price":1530.0,"photo":"png","no_stock":false},{"code":"448","code_safe":"448","name":"Litera grande cerrada con pala","category":"Plásticos y Comederos","price":30900.0,"photo":null,"no_stock":false},{"code":"261","code_safe":"261","name":"Bebedero hámster chico","category":"Plásticos y Comederos","price":2315.56,"photo":"png","no_stock":false},{"code":"262","code_safe":"262","name":"Bebedero hámster mediano","category":"Plásticos y Comederos","price":2455.0,"photo":"png","no_stock":false},{"code":"263","code_safe":"263","name":"Bebedero hámster grande","category":"Plásticos y Comederos","price":2774.0,"photo":"png","no_stock":false},{"code":"260","code_safe":"260","name":"Casita hámster","category":"Plásticos y Comederos","price":1780.0,"photo":"png","no_stock":false},{"code":"264","code_safe":"264","name":"Rueda hámster","category":"Plásticos y Comederos","price":2352.0,"photo":"png","no_stock":false},{"code":"265","code_safe":"265","name":"Esfera hámster","category":"Plásticos y Comederos","price":4250.0,"photo":"png","no_stock":false},{"code":"253","code_safe":"253","name":"Comedero Mini (New Pet)","category":"Plásticos y Comederos","price":445.0,"photo":"png","no_stock":false},{"code":"255","code_safe":"255","name":"Comedero gato (New Pet)","category":"Plásticos y Comederos","price":565.0,"photo":"png","no_stock":false},{"code":"254","code_safe":"254","name":"Comedero grande (New Pet)","category":"Plásticos y Comederos","price":1364.0,"photo":"png","no_stock":false},{"code":"256","code_safe":"256","name":"Comedero ovejero (New Pet)","category":"Plásticos y Comederos","price":1990.0,"photo":null,"no_stock":false},{"code":"251","code_safe":"251","name":"Kit sanitario mediano color","category":"Plásticos y Comederos","price":3499.0,"photo":"png","no_stock":false},{"code":"252","code_safe":"252","name":"Kit sanitario mediano negro","category":"Plásticos y Comederos","price":2690.0,"photo":"png","no_stock":false},{"code":"1269","code_safe":"1269","name":"Cazuela Acero Moño 17cm","category":"Plásticos y Comederos","price":3990.0,"photo":"png","no_stock":false},{"code":"1302","code_safe":"1302","name":"Comedero Altura 20cm Premium","category":"Plásticos y Comederos","price":21900.0,"photo":"png","no_stock":false},{"code":"1301","code_safe":"1301","name":"Comedero Altura 15cm Premium","category":"Plásticos y Comederos","price":19490.0,"photo":"png","no_stock":false},{"code":"642","code_safe":"642","name":"Comedero Melamina doble estampado 24cm","category":"Plásticos y Comederos","price":2390.0,"photo":"png","no_stock":false},{"code":"1267","code_safe":"1267","name":"Comedero Melamina estampado 14cm","category":"Plásticos y Comederos","price":1090.0,"photo":"png","no_stock":false},{"code":"CAO","code_safe":"CAO","name":"Comedero acero doble c/ orejas","category":"Plásticos y Comederos","price":6290.0,"photo":"png","no_stock":false},{"code":"1268","code_safe":"1268","name":"Comedero Doble acero gato 14cmX2","category":"Plásticos y Comederos","price":9990.0,"photo":"png","no_stock":false},{"code":"CAE","code_safe":"CAE","name":"Comedero doble de acero elevado 6.5cm","category":"Plásticos y Comederos","price":9490.0,"photo":"png","no_stock":false},{"code":"CAE1","code_safe":"CAE1","name":"Comedero acero elevado 6.5cm (Simple)","category":"Plásticos y Comederos","price":9900.0,"photo":"png","no_stock":false},{"code":"CAE2","code_safe":"CAE2","name":"Comedero acero elevado 6.5cm doble","category":"Plásticos y Comederos","price":10790.0,"photo":"png","no_stock":false},{"code":"868","code_safe":"868","name":"Comedero doble acero 37cm","category":"Plásticos y Comederos","price":8990.0,"photo":"png","no_stock":false},{"code":"213","code_safe":"213","name":"Comedero Acero Inoxidable 18cm","category":"Plásticos y Comederos","price":2990.0,"photo":"png","no_stock":false},{"code":"638","code_safe":"638","name":"Comedero Acero Inoxidable 22cm","category":"Plásticos y Comederos","price":4699.0,"photo":"png","no_stock":false},{"code":"640","code_safe":"640","name":"Comedero Acero Inoxidable 26cm","category":"Plásticos y Comederos","price":5490.0,"photo":"png","no_stock":false},{"code":"860","code_safe":"860","name":"Comedero Acero Inoxidable 30cm","category":"Plásticos y Comederos","price":6690.0,"photo":"png","no_stock":false},{"code":"CA1","code_safe":"CA1","name":"Comedero Altura doble REGULABLE","category":"Plásticos y Comederos","price":25490.0,"photo":"png","no_stock":false},{"code":"225","code_safe":"225","name":"Bebedero de Paseo Grande","category":"Plásticos y Comederos","price":3090.0,"photo":"png","no_stock":false},{"code":"224","code_safe":"224","name":"Bebedero de paseo chico","category":"Plásticos y Comederos","price":2850.0,"photo":"png","no_stock":false},{"code":"1011","code_safe":"1011","name":"Botella dispensadora c/botón 550ML","category":"Plásticos y Comederos","price":9890.0,"photo":"png","no_stock":false},{"code":"FS1","code_safe":"FS1","name":"Fuente dispensadora de agua con sensor","category":"Plásticos y Comederos","price":43900.0,"photo":"png","no_stock":false},{"code":"465","code_safe":"465","name":"Dispensador de agua p/gatos","category":"Plásticos y Comederos","price":29500.0,"photo":"png","no_stock":false},{"code":"Bo3","code_safe":"Bo3","name":"Bowl 3 en 1 comedero/bebedero","category":"Plásticos y Comederos","price":4650.0,"photo":"png","no_stock":false},{"code":"560","code_safe":"560","name":"Platito beb. portátil plegable mini","category":"Plásticos y Comederos","price":1690.0,"photo":"png","no_stock":false},{"code":"921","code_safe":"921","name":"Platito Plegable portátil mediano","category":"Plásticos y Comederos","price":3090.0,"photo":"png","no_stock":false},{"code":"BBPA","code_safe":"BBPA","name":"Botella bebedero + porta alimento","category":"Plásticos y Comederos","price":13590.0,"photo":"png","no_stock":false},{"code":"CCGD","code_safe":"CCGD","name":"Comedero Gato Doble","category":"Plásticos y Comederos","price":2190.0,"photo":"png","no_stock":false},{"code":"543","code_safe":"543","name":"Comedero Germinador hierba gatera","category":"Plásticos y Comederos","price":10990.0,"photo":"png","no_stock":false},{"code":"FS2","code_safe":"FS2","name":"Comedero Automático Temporizador","category":"Plásticos y Comederos","price":63900.0,"photo":"png","no_stock":false},{"code":"MT8","code_safe":"MT8","name":"Maceta Triangular N°8","category":"Plásticos y Comederos","price":320.0,"photo":"png","no_stock":false},{"code":"MT10","code_safe":"MT10","name":"Maceta Triangular N°10","category":"Plásticos y Comederos","price":399.0,"photo":"png","no_stock":false},{"code":"MT16","code_safe":"MT16","name":"Maceta Triangular N°16","category":"Plásticos y Comederos","price":1250.0,"photo":"png","no_stock":false},{"code":"MT22","code_safe":"MT22","name":"Maceta Triangular N°22","category":"Plásticos y Comederos","price":2990.0,"photo":"png","no_stock":false},{"code":"MT28","code_safe":"MT28","name":"Maceta Triangular N°28","category":"Plásticos y Comederos","price":5200.0,"photo":"png","no_stock":false},{"code":"MC14","code_safe":"MC14","name":"Maceta Circular N°14","category":"Plásticos y Comederos","price":850.0,"photo":"png","no_stock":false},{"code":"126","code_safe":"126","name":"Alicate","category":"Higiene y Peluquería","price":2850.0,"photo":"png","no_stock":false},{"code":"129","code_safe":"129","name":"Alicate grande","category":"Higiene y Peluquería","price":3890.0,"photo":"png","no_stock":false},{"code":"801","code_safe":"801","name":"Cepillo vaporizador cara de gato","category":"Higiene y Peluquería","price":9590.0,"photo":"png","no_stock":false},{"code":"108","code_safe":"108","name":"Alicate + Lima","category":"Higiene y Peluquería","price":2990.0,"photo":null,"no_stock":false},{"code":"135","code_safe":"135","name":"Alicate + Lima Grande","category":"Higiene y Peluquería","price":3690.0,"photo":"png","no_stock":false},{"code":"107","code_safe":"107","name":"Cardina Fluor chica","category":"Higiene y Peluquería","price":1720.0,"photo":null,"no_stock":false},{"code":"24","code_safe":"24","name":"Rastrillo Saca-Pelusa","category":"Higiene y Peluquería","price":1499.0,"photo":"png","no_stock":false},{"code":"112","code_safe":"112","name":"Cardina expulsa pelo mediana","category":"Higiene y Peluquería","price":4590.0,"photo":null,"no_stock":false},{"code":"114","code_safe":"114","name":"Cardina madera mediana","category":"Higiene y Peluquería","price":1690.0,"photo":null,"no_stock":false},{"code":"115","code_safe":"115","name":"Cardina madera grande","category":"Higiene y Peluquería","price":2390.0,"photo":null,"no_stock":false},{"code":"113","code_safe":"113","name":"Cardina madera chica","category":"Higiene y Peluquería","price":1390.0,"photo":null,"no_stock":false},{"code":"116","code_safe":"116","name":"Cardina madera XL","category":"Higiene y Peluquería","price":2990.0,"photo":"png","no_stock":false},{"code":"121","code_safe":"121","name":"Cardina c/boton expulsa pelo Vapor","category":"Higiene y Peluquería","price":16990.0,"photo":"png","no_stock":false},{"code":"103","code_safe":"103","name":"Cardina plástica chica","category":"Higiene y Peluquería","price":1459.0,"photo":null,"no_stock":false},{"code":"104","code_safe":"104","name":"Cardina plástica mediana","category":"Higiene y Peluquería","price":1590.0,"photo":null,"no_stock":false},{"code":"105","code_safe":"105","name":"Cardina plástica grande","category":"Higiene y Peluquería","price":2490.0,"photo":null,"no_stock":false},{"code":"SPM","code_safe":"SPM","name":"Saca-pelo Mini 30 Laminas","category":"Higiene y Peluquería","price":999.0,"photo":"png","no_stock":false},{"code":"102","code_safe":"102","name":"Cepillo Doble chico","category":"Higiene y Peluquería","price":1790.0,"photo":null,"no_stock":false},{"code":"101","code_safe":"101","name":"Cepillo Doble Grande","category":"Higiene y Peluquería","price":2430.0,"photo":null,"no_stock":false},{"code":"RQL","code_safe":"RQL","name":"Rodillo Quita-pelo Lavable Grande","category":"Higiene y Peluquería","price":3490.0,"photo":"png","no_stock":false},{"code":"1020","code_safe":"1020","name":"Cepillo siliconado dosificador","category":"Higiene y Peluquería","price":1650.0,"photo":"png","no_stock":false},{"code":"1027","code_safe":"1027","name":"Cepillo Vaporizador 3 en 1","category":"Higiene y Peluquería","price":3390.0,"photo":"png","no_stock":false},{"code":"633","code_safe":"633","name":"Saca-pelusa doble","category":"Higiene y Peluquería","price":2490.0,"photo":"png","no_stock":false},{"code":"128","code_safe":"128","name":"Manopla guante","category":"Higiene y Peluquería","price":3290.0,"photo":"png","no_stock":false},{"code":"125","code_safe":"125","name":"Peine saca pelo con boton","category":"Higiene y Peluquería","price":2990.0,"photo":"png","no_stock":false},{"code":"124","code_safe":"124","name":"Peine Acero Inoxidable con mango","category":"Higiene y Peluquería","price":1830.0,"photo":null,"no_stock":false},{"code":"CBEXP","code_safe":"CBEXP","name":"Cardina con boton expulsa pelo profesional","category":"Higiene y Peluquería","price":4990.0,"photo":"png","no_stock":false},{"code":"CHAP","code_safe":"CHAP","name":"Chapita Metalica Hueso","category":"Higiene y Peluquería","price":1499.0,"photo":"png","no_stock":false},{"code":"122","code_safe":"122","name":"Peine saca pulgas","category":"Higiene y Peluquería","price":1150.0,"photo":"png","no_stock":false},{"code":"23","code_safe":"23","name":"Silicona Quita-Pelo gruesa x2","category":"Higiene y Peluquería","price":2990.0,"photo":"png","no_stock":false},{"code":"110-1","code_safe":"110-1","name":"Manopla de Goma Saca pelo Nacional","category":"Higiene y Peluquería","price":1470.0,"photo":null,"no_stock":false},{"code":"KM","code_safe":"KM","name":"Kit mamadera 120ML","category":"Higiene y Peluquería","price":4390.0,"photo":"png","no_stock":false},{"code":"964","code_safe":"964","name":"Kit mamadera (chico)","category":"Higiene y Peluquería","price":3799.0,"photo":"png","no_stock":false},{"code":"GS1","code_safe":"GS1","name":"Guante saca pelo 2 en 1","category":"Higiene y Peluquería","price":4790.0,"photo":"png","no_stock":false},{"code":"526","code_safe":"526","name":"Jeringa Mascotas","category":"Higiene y Peluquería","price":2290.0,"photo":"png","no_stock":false},{"code":"232","code_safe":"232","name":"Mamadera","category":"Higiene y Peluquería","price":2067.0,"photo":"png","no_stock":false},{"code":"1304","code_safe":"1304","name":"Cepillo Vaporizador Osito","category":"Higiene y Peluquería","price":5790.0,"photo":"png","no_stock":false},{"code":"136","code_safe":"136","name":"Repuesto Bolsa x3","category":"Higiene y Peluquería","price":1290.0,"photo":"png","no_stock":false},{"code":"424","code_safe":"424","name":"Limpia Patas mediano","category":"Higiene y Peluquería","price":5490.0,"photo":"png","no_stock":false},{"code":"572","code_safe":"572","name":"Limpia Patas grande","category":"Higiene y Peluquería","price":7490.0,"photo":"png","no_stock":false},{"code":"1250","code_safe":"1250","name":"Guante Saca-Pelo","category":"Higiene y Peluquería","price":2890.0,"photo":"png","no_stock":false},{"code":"117","code_safe":"117","name":"Saca Pelo Cilindro","category":"Higiene y Peluquería","price":1845.2,"photo":null,"no_stock":false},{"code":"911","code_safe":"911","name":"Vaporizador 3 en 1 c/mango","category":"Higiene y Peluquería","price":4500.0,"photo":"png","no_stock":false},{"code":"1025","code_safe":"1025","name":"Vaporizador 3 en 1 Patito","category":"Higiene y Peluquería","price":7590.0,"photo":"png","no_stock":false},{"code":"TA1","code_safe":"TA1","name":"Tijera Alicate","category":"Higiene y Peluquería","price":1869.0,"photo":"png","no_stock":false},{"code":"966","code_safe":"966","name":"Cardina C/Boton Exp.Pelo Chica","category":"Higiene y Peluquería","price":2945.0,"photo":"png","no_stock":false},{"code":"1308","code_safe":"1308","name":"Deslanador Grande","category":"Higiene y Peluquería","price":4990.0,"photo":"png","no_stock":false},{"code":"TA2","code_safe":"TA2","name":"Tijera Alicate chica","category":"Higiene y Peluquería","price":1780.0,"photo":"png","no_stock":false},{"code":"PD","code_safe":"PD","name":"palita dosificadora","category":"Higiene y Peluquería","price":1450.0,"photo":"png","no_stock":false},{"code":"PRC","code_safe":"PRC","name":"Palita Recolectora","category":"Higiene y Peluquería","price":3990.0,"photo":"png","no_stock":false},{"code":"139","code_safe":"139","name":"PEINE ELÉCTRICO ELIMINA PULGAS","category":"Higiene y Peluquería","price":8699.0,"photo":"png","no_stock":false},{"code":"123","code_safe":"123","name":"Cepillo de dientes doble (Pack x2)","category":"Higiene y Peluquería","price":1875.0,"photo":null,"no_stock":false},{"code":"127","code_safe":"127","name":"Dedal x2","category":"Higiene y Peluquería","price":1538.0,"photo":null,"no_stock":false},{"code":"707","code_safe":"707","name":"Loción Canina Varias Fragancias","category":"Higiene y Peluquería","price":4590.0,"photo":"png","no_stock":false},{"code":"120","code_safe":"120","name":"Kit Dental","category":"Higiene y Peluquería","price":4190.0,"photo":"png","no_stock":false},{"code":"1271","code_safe":"1271","name":"Cepillo Saca-pelusa Masajeador","category":"Higiene y Peluquería","price":3049.9,"photo":"png","no_stock":false},{"code":"FUR1","code_safe":"FUR1","name":"Cepillo Furminator 15*10cm","category":"Higiene y Peluquería","price":9890.0,"photo":"png","no_stock":false},{"code":"867","code_safe":"867","name":"Repuesto Bolsa x5","category":"Higiene y Peluquería","price":1690.0,"photo":"png","no_stock":false},{"code":"DS2","code_safe":"DS2","name":"Dedal Silicona x2 (Pet Co)","category":"Higiene y Peluquería","price":2465.0,"photo":"png","no_stock":false},{"code":"SLVA","code_safe":"SLVA","name":"Huella saca pelo lavarropa GRANDE","category":"Higiene y Peluquería","price":4290.0,"photo":"png","no_stock":false},{"code":"916","code_safe":"916","name":"Dedal siliconado c/estuche","category":"Higiene y Peluquería","price":1650.0,"photo":"png","no_stock":false},{"code":"CEPC","code_safe":"CEPC","name":"Cardina expulsa pelo conejito","category":"Higiene y Peluquería","price":3450.0,"photo":"png","no_stock":false},{"code":"714","code_safe":"714","name":"Bandeja Sanitaria Cesped 35x50cm","category":"Higiene y Peluquería","price":36725.0,"photo":"jpeg","no_stock":false},{"code":"600","code_safe":"600","name":"PAÑOPET x10 Max","category":"Higiene y Peluquería","price":10972.0,"photo":"png","no_stock":false},{"code":"758","code_safe":"758","name":"PAÑO-PET x10 Mini","category":"Higiene y Peluquería","price":7590.0,"photo":"png","no_stock":false},{"code":"484","code_safe":"484","name":"Pet-Wash Baño espumoso","category":"Higiene y Peluquería","price":3350.0,"photo":"jpeg","no_stock":false},{"code":"742","code_safe":"742","name":"Toallitas Humedas x30","category":"Higiene y Peluquería","price":2980.0,"photo":"png","no_stock":false},{"code":"736","code_safe":"736","name":"Shampoo Elmer Pelajes Blancos","category":"Higiene y Peluquería","price":3217.07,"photo":null,"no_stock":false},{"code":"733","code_safe":"733","name":"Shampoo Elmer Pelaje Oscuro","category":"Higiene y Peluquería","price":3512.51,"photo":null,"no_stock":false},{"code":"735","code_safe":"735","name":"Shampoo Elmer Pulguicida y garrapat.","category":"Higiene y Peluquería","price":3217.07,"photo":null,"no_stock":false},{"code":"734","code_safe":"734","name":"Shampoo Elmer Acondicionador","category":"Higiene y Peluquería","price":3217.07,"photo":null,"no_stock":false},{"code":"704","code_safe":"704","name":"Shampoo Aceite de Argán","category":"Higiene y Peluquería","price":4490.0,"photo":"png","no_stock":false},{"code":"702","code_safe":"702","name":"Shampoo contra Pulgas y Garrapatas","category":"Higiene y Peluquería","price":4490.0,"photo":"png","no_stock":false},{"code":"701","code_safe":"701","name":"Talco Hectopar","category":"Higiene y Peluquería","price":2729.5,"photo":"png","no_stock":false},{"code":"33","code_safe":"33","name":"Puajj Elmer","category":"Higiene y Peluquería","price":4028.1,"photo":"png","no_stock":false},{"code":"703","code_safe":"703","name":"Shampoo Belleza Cítrico","category":"Higiene y Peluquería","price":4490.0,"photo":"png","no_stock":false},{"code":"d1","code_safe":"d1","name":"Shampoo Dermapet Intensive Wash 1L","category":"Higiene y Peluquería","price":23270.0,"photo":"png","no_stock":false},{"code":"d2","code_safe":"d2","name":"Shampoo Dermapet Pelo Largo 1L","category":"Higiene y Peluquería","price":26260.0,"photo":"png","no_stock":false},{"code":"d3","code_safe":"d3","name":"Shampoo Dermapet Todo tipo de pelo 1L","category":"Higiene y Peluquería","price":23270.0,"photo":"png","no_stock":false},{"code":"d4","code_safe":"d4","name":"Shampoo Dermapet Voluminizante 1L","category":"Higiene y Peluquería","price":23270.0,"photo":"png","no_stock":false},{"code":"d5","code_safe":"d5","name":"Shampoo Dermapet Antiseptico 1L","category":"Higiene y Peluquería","price":26830.0,"photo":"png","no_stock":false},{"code":"d6","code_safe":"d6","name":"Shampoo Dermapet Antiseborreico 1L","category":"Higiene y Peluquería","price":26830.0,"photo":"png","no_stock":false},{"code":"d7","code_safe":"d7","name":"Shampoo Dermapet Acondicionador 1L","category":"Higiene y Peluquería","price":26260.0,"photo":"png","no_stock":false},{"code":"d8","code_safe":"d8","name":"Shampoo Dermapet Pelo Largo 5L","category":"Higiene y Peluquería","price":72900.0,"photo":"png","no_stock":false},{"code":"d9","code_safe":"d9","name":"Shampoo Dermapet Acondicionador 5L","category":"Higiene y Peluquería","price":73570.0,"photo":"png","no_stock":false},{"code":"d11","code_safe":"d11","name":"Shampoo Dermapet Intensive Wash 5L","category":"Higiene y Peluquería","price":66250.0,"photo":"png","no_stock":false},{"code":"d12","code_safe":"d12","name":"Shampoo Dermapet Todo tipo de pelo 5L","category":"Higiene y Peluquería","price":66250.0,"photo":"png","no_stock":false},{"code":"d10","code_safe":"d10","name":"Shampoo Dermapet Voluminizante 5L","category":"Higiene y Peluquería","price":66250.0,"photo":"png","no_stock":false},{"code":"PC1","code_safe":"PC1","name":"Shampoo Perfucan Rosas y Aloe vera 5L","category":"Higiene y Peluquería","price":29500.0,"photo":"png","no_stock":false},{"code":"PC2","code_safe":"PC2","name":"Shampoo Perfucan Con Keratina 5L","category":"Higiene y Peluquería","price":29500.0,"photo":"png","no_stock":false},{"code":"PC3","code_safe":"PC3","name":"Shampoo Perfucan Nutrición y suavidad 5L","category":"Higiene y Peluquería","price":29500.0,"photo":null,"no_stock":false},{"code":"PC4","code_safe":"PC4","name":"Shampoo Perfucan Limpieza Profunda 5L","category":"Higiene y Peluquería","price":29500.0,"photo":"png","no_stock":false},{"code":"PC5","code_safe":"PC5","name":"Shampoo Perfucan Miel y Betania 5L","category":"Higiene y Peluquería","price":29500.0,"photo":"png","no_stock":false},{"code":"21","code_safe":"21","name":"saca pelusa a pila mediano (azul)","category":"Higiene y Peluquería","price":3799.0,"photo":"png","no_stock":false},{"code":"1016","code_safe":"1016","name":"saca pelusa a pila mediano (madera)","category":"Higiene y Peluquería","price":1899.0,"photo":"png","no_stock":false},{"code":"22","code_safe":"22","name":"saca pelusa a pila chico","category":"Higiene y Peluquería","price":2699.0,"photo":"png","no_stock":false},{"code":"REX","code_safe":"REX","name":"Recolector excremento 2 en 1","category":"Higiene y Peluquería","price":12990.0,"photo":"png","no_stock":false},{"code":"339","code_safe":"339","name":"Saca-Pelusa automatico USB","category":"Higiene y Peluquería","price":9490.0,"photo":"png","no_stock":false},{"code":"739","code_safe":"739","name":"Fragancia Dermapet p/Cachorro","category":"Higiene y Peluquería","price":10072.0,"photo":"png","no_stock":false},{"code":"738","code_safe":"738","name":"Fragancia Dermapet p/Hembra","category":"Higiene y Peluquería","price":10072.0,"photo":"png","no_stock":false},{"code":"737","code_safe":"737","name":"Fragancia Dermapet p/Perro","category":"Higiene y Peluquería","price":10072.0,"photo":"png","no_stock":false},{"code":"731","code_safe":"731","name":"Shampoo Elmer Cachorros","category":"Higiene y Peluquería","price":2450.0,"photo":"png","no_stock":false},{"code":"760","code_safe":"760","name":"Shampoo Pulgas y Garrapatas 500Ml","category":"Higiene y Peluquería","price":4800.0,"photo":"png","no_stock":false},{"code":"761","code_safe":"761","name":"Shampoo Aceite de Argán 500Ml","category":"Higiene y Peluquería","price":4800.0,"photo":"png","no_stock":false},{"code":"762","code_safe":"762","name":"Shampoo Limpieza Profunda Premium 500Ml","category":"Higiene y Peluquería","price":4800.0,"photo":"png","no_stock":false},{"code":"CT6","code_safe":"CT6","name":"Bandeja sanitaria con cesped sintetico","category":"Higiene y Peluquería","price":19000.0,"photo":"png","no_stock":false},{"code":"976","code_safe":"976","name":"Pañales PañoPet Mini Chico x3","category":"Higiene y Peluquería","price":2860.0,"photo":"png","no_stock":false},{"code":"977","code_safe":"977","name":"Pañales PañoPet Mini Mediano x3","category":"Higiene y Peluquería","price":2860.0,"photo":"png","no_stock":false},{"code":"978","code_safe":"978","name":"Pañales PañoPet Mini Grande x3","category":"Higiene y Peluquería","price":2860.0,"photo":"png","no_stock":false},{"code":"979","code_safe":"979","name":"Pañales PañoPet Mini XL x3","category":"Higiene y Peluquería","price":2860.0,"photo":"png","no_stock":false},{"code":"980","code_safe":"980","name":"Pañales PañoPet Max Junior x2","category":"Higiene y Peluquería","price":2860.0,"photo":"png","no_stock":false},{"code":"981","code_safe":"981","name":"Pañales PañoPet Max Jumbo x2","category":"Higiene y Peluquería","price":2860.0,"photo":"png","no_stock":false},{"code":"982","code_safe":"982","name":"Pañales PañoPet Max Mega x2","category":"Higiene y Peluquería","price":2860.0,"photo":"png","no_stock":false},{"code":"983","code_safe":"983","name":"NO ACA!!!","category":"Higiene y Peluquería","price":5298.94,"photo":"png","no_stock":false},{"code":"984","code_safe":"984","name":"Ecthol Hectopar 120ml","category":"Higiene y Peluquería","price":6767.0,"photo":"png","no_stock":false},{"code":"985","code_safe":"985","name":"Ecthol Hectopar 70ml","category":"Higiene y Peluquería","price":4429.0,"photo":"png","no_stock":false},{"code":"zt1","code_safe":"zt1","name":"Piedras aglutinantes zootec 15KG","category":"Higiene y Peluquería","price":9390.0,"photo":"png","no_stock":false},{"code":"zt2","code_safe":"zt2","name":"Piedras aglutinantes zootec 4KG","category":"Higiene y Peluquería","price":3250.0,"photo":"png","no_stock":false},{"code":"zt3","code_safe":"zt3","name":"Piedras aglutinantes zootec Lavanda 15KG","category":"Higiene y Peluquería","price":9390.0,"photo":"png","no_stock":false},{"code":"zt4","code_safe":"zt4","name":"Piedras aglutinantes zootec Lavanda 4KG","category":"Higiene y Peluquería","price":3250.0,"photo":"png","no_stock":false},{"code":"877","code_safe":"877","name":"Capsula recolectora vacia","category":"Higiene y Peluquería","price":530.0,"photo":"png","no_stock":false},{"code":"CAPP","code_safe":"CAPP","name":"Collar anti-pulgas importado perro","category":"Higiene y Peluquería","price":3690.0,"photo":"png","no_stock":false},{"code":"CAPG","code_safe":"CAPG","name":"Collar anti-pulgas importado gato","category":"Higiene y Peluquería","price":2990.0,"photo":"png","no_stock":false},{"code":"670","code_safe":"670","name":"Bozal Canasta Talle 1","category":"Paseo y Transporte","price":2290.0,"photo":"png","no_stock":false},{"code":"671","code_safe":"671","name":"Bozal Canasta Talle 2","category":"Paseo y Transporte","price":2450.0,"photo":"png","no_stock":false},{"code":"672","code_safe":"672","name":"Bozal Canasta Talle 3","category":"Paseo y Transporte","price":2890.0,"photo":"png","no_stock":false},{"code":"673","code_safe":"673","name":"Bozal Canasta Talle 4","category":"Paseo y Transporte","price":3350.0,"photo":"png","no_stock":false},{"code":"674","code_safe":"674","name":"Bozal Canasta Talle 5","category":"Paseo y Transporte","price":3745.0,"photo":"png","no_stock":false},{"code":"675","code_safe":"675","name":"Bozal Canasta Talle 6","category":"Paseo y Transporte","price":3999.0,"photo":"png","no_stock":false},{"code":"676","code_safe":"676","name":"Bozal Canasta Talle 7","category":"Paseo y Transporte","price":4475.0,"photo":"png","no_stock":false},{"code":"BP5","code_safe":"BP5","name":"Bozal Premium N°5 regulable","category":"Paseo y Transporte","price":8990.0,"photo":"png","no_stock":false},{"code":"308","code_safe":"308","name":"Cinturón de seguridad","category":"Paseo y Transporte","price":5799.0,"photo":"png","no_stock":false},{"code":"349","code_safe":"349","name":"Cinturón de seguridad Importado (Línea Económica)","category":"Paseo y Transporte","price":2200.0,"photo":null,"no_stock":false},{"code":"ZAPM","code_safe":"ZAPM","name":"Zapatillas Talle M","category":"Paseo y Transporte","price":6399.0,"photo":"png","no_stock":false},{"code":"ZAPL","code_safe":"ZAPL","name":"Zapatillas Talle L","category":"Paseo y Transporte","price":6399.0,"photo":"png","no_stock":false},{"code":"555","code_safe":"555","name":"Collar con Laser p/gato","category":"Paseo y Transporte","price":4190.0,"photo":"png","no_stock":false},{"code":"BRB","code_safe":"BRB","name":"Bebedero rosca p/botella","category":"Paseo y Transporte","price":2290.0,"photo":"png","no_stock":false},{"code":"26","code_safe":"26","name":"Collar regulable reflectante 2.0","category":"Paseo y Transporte","price":1990.0,"photo":"png","no_stock":false},{"code":"GM","code_safe":"GM","name":"Gorritos para mascotas","category":"Paseo y Transporte","price":3699.0,"photo":"png","no_stock":false},{"code":"899","code_safe":"899","name":"Funda cubre asiento trasero","category":"Paseo y Transporte","price":15973.0,"photo":"png","no_stock":false},{"code":"15","code_safe":"15","name":"Cubre asiento delantero","category":"Paseo y Transporte","price":8639.0,"photo":"png","no_stock":false},{"code":"TRPP","code_safe":"TRPP","name":"Transportadora rigida puerta plastica 43x28x28cm","category":"Paseo y Transporte","price":18900.0,"photo":"png","no_stock":false},{"code":"2025","code_safe":"2025","name":"Retractil 5 mtrs + linterna 35kg","category":"Paseo y Transporte","price":12500.0,"photo":"png","no_stock":false},{"code":"238","code_safe":"238","name":"Correa paseo 3M importada","category":"Paseo y Transporte","price":3590.0,"photo":"png","no_stock":false},{"code":"239","code_safe":"239","name":"Correa paseo 5M importada","category":"Paseo y Transporte","price":4590.0,"photo":"png","no_stock":false},{"code":"359","code_safe":"359","name":"Ahorque 70 cm x 4.0 mm común","category":"Paseo y Transporte","price":2690.0,"photo":"png","no_stock":false},{"code":"355","code_safe":"355","name":"Ahorque 60 cm x 2.0 mm importado","category":"Paseo y Transporte","price":1490.0,"photo":null,"no_stock":false},{"code":"357","code_safe":"357","name":"Ahorque 60 cm x 3.0 mm importado","category":"Paseo y Transporte","price":1890.0,"photo":null,"no_stock":false},{"code":"859","code_safe":"859","name":"Blister Collar regulable Varios motivos x12","category":"Paseo y Transporte","price":699.0,"photo":"png","no_stock":false},{"code":"1311","code_safe":"1311","name":"pretal + correa importado reflectante c/dibujitos","category":"Paseo y Transporte","price":2990.0,"photo":"png","no_stock":false},{"code":"1307","code_safe":"1307","name":"Pretal + correa gato reflectante","category":"Paseo y Transporte","price":2590.0,"photo":"png","no_stock":false},{"code":"CAAC","code_safe":"CAAC","name":"Correa Antideslizante de ahorque chica","category":"Paseo y Transporte","price":2390.0,"photo":"png","no_stock":false},{"code":"421","code_safe":"421","name":"Collar c/pañuelo Sublimado 2.0cm","category":"Paseo y Transporte","price":1790.0,"photo":null,"no_stock":false},{"code":"423","code_safe":"423","name":"Collar c/ diamantes y calavera 2.0","category":"Paseo y Transporte","price":1650.0,"photo":"png","no_stock":false},{"code":"348","code_safe":"348","name":"Pretal + correa tipo nato XL","category":"Paseo y Transporte","price":13490.0,"photo":"png","no_stock":false},{"code":"428","code_safe":"428","name":"Collar cuero con tachas 2.5cm","category":"Paseo y Transporte","price":1725.4,"photo":null,"no_stock":false},{"code":"492","code_safe":"492","name":"Collar Eco-Cuero tachas c/ ebilla 3.0","category":"Paseo y Transporte","price":2590.0,"photo":"png","no_stock":false},{"code":"489","code_safe":"489","name":"Collar eco-cuero c/huesitos 1.5cm","category":"Paseo y Transporte","price":1745.9,"photo":null,"no_stock":false},{"code":"490","code_safe":"490","name":"Collar eco-cuero c/huesitos 2.5cm","category":"Paseo y Transporte","price":2159.0,"photo":null,"no_stock":false},{"code":"489","code_safe":"489","name":"Collar con tachas en punta + chapita 2.5cm","category":"Paseo y Transporte","price":2390.0,"photo":null,"no_stock":false},{"code":"363","code_safe":"363","name":"Collar gato c/pañuelo blisterx12","category":"Paseo y Transporte","price":9890.0,"photo":"png","no_stock":false},{"code":"374","code_safe":"374","name":"Arnes acolchonado nacional Talle XS","category":"Paseo y Transporte","price":6659.0,"photo":"png","no_stock":false},{"code":"375","code_safe":"375","name":"Arnes acolchonado nacional Talle S","category":"Paseo y Transporte","price":7285.0,"photo":"png","no_stock":false},{"code":"377","code_safe":"377","name":"Arnes acolchonado nacional Talle L","category":"Paseo y Transporte","price":7968.0,"photo":"png","no_stock":false},{"code":"378","code_safe":"378","name":"Arnes acolchonado nacional Talle XL","category":"Paseo y Transporte","price":8594.0,"photo":"png","no_stock":false},{"code":"812","code_safe":"812","name":"Arnes acolchonado nacional Talle XXL","category":"Paseo y Transporte","price":8765.0,"photo":"png","no_stock":false},{"code":"343","code_safe":"343","name":"Collar Gato (Blister x12 unidades)","category":"Paseo y Transporte","price":4390.0,"photo":"png","no_stock":false},{"code":"3544","code_safe":"3544","name":"Collar c/pañuelo 1.5cm","category":"Paseo y Transporte","price":1190.0,"photo":"png","no_stock":false},{"code":"3545","code_safe":"3545","name":"Collar c/pañuelo 2.5cm","category":"Paseo y Transporte","price":1920.0,"photo":"png","no_stock":false},{"code":"PDZ","code_safe":"PDZ","name":"Correa + pretal pechera doble Talle S","category":"Paseo y Transporte","price":7250.0,"photo":"png","no_stock":false},{"code":"CN7","code_safe":"CN7","name":"Collar Nato 70x4cm","category":"Paseo y Transporte","price":5790.0,"photo":"png","no_stock":false},{"code":"CN5","code_safe":"CN5","name":"Collar Nato 55x30cm","category":"Paseo y Transporte","price":3990.0,"photo":"png","no_stock":false},{"code":"PDM","code_safe":"PDM","name":"Correa + pretal pechera doble Talle M","category":"Paseo y Transporte","price":7950.0,"photo":"png","no_stock":false},{"code":"PDL","code_safe":"PDL","name":"Correa + pretal pechera doble Talle L","category":"Paseo y Transporte","price":8890.0,"photo":"png","no_stock":false},{"code":"PDXL","code_safe":"PDXL","name":"Correa + pretal pechera doble Talle XL","category":"Paseo y Transporte","price":10190.0,"photo":"png","no_stock":false},{"code":"16","code_safe":"16","name":"Blister collar regulable x6","category":"Paseo y Transporte","price":4190.0,"photo":"png","no_stock":false},{"code":"871","code_safe":"871","name":"Correa + pretal importado chico","category":"Paseo y Transporte","price":3690.0,"photo":"png","no_stock":false},{"code":"17","code_safe":"17","name":"pretal + correa importado 2.0cm","category":"Paseo y Transporte","price":2690.0,"photo":"png","no_stock":false},{"code":"351","code_safe":"351","name":"Collar Gato Elastizado (Blíster x12)","category":"Paseo y Transporte","price":8690.0,"photo":"png","no_stock":false},{"code":"318","code_safe":"318","name":"Collar Regulable Talle S","category":"Paseo y Transporte","price":1075.0,"photo":"png","no_stock":false},{"code":"319","code_safe":"319","name":"Collar Regulable Talle M","category":"Paseo y Transporte","price":1185.0,"photo":"png","no_stock":false},{"code":"320","code_safe":"320","name":"Collar Regulable Talle L","category":"Paseo y Transporte","price":1425.0,"photo":"png","no_stock":false},{"code":"321","code_safe":"321","name":"Collar Regulable Talle XL","category":"Paseo y Transporte","price":1549.0,"photo":"png","no_stock":false},{"code":"872","code_safe":"872","name":"Blister correa + Pechera L","category":"Paseo y Transporte","price":7190.0,"photo":"png","no_stock":false},{"code":"309","code_safe":"309","name":"Collar Talle 0","category":"Paseo y Transporte","price":899.0,"photo":"png","no_stock":false},{"code":"310","code_safe":"310","name":"Collar Talle 1","category":"Paseo y Transporte","price":930.0,"photo":"png","no_stock":false},{"code":"311","code_safe":"311","name":"Collar Talle 2","category":"Paseo y Transporte","price":960.0,"photo":"png","no_stock":false},{"code":"312","code_safe":"312","name":"Collar Talle 3","category":"Paseo y Transporte","price":1312.0,"photo":"png","no_stock":false},{"code":"313","code_safe":"313","name":"Collar Talle 4","category":"Paseo y Transporte","price":1349.0,"photo":"png","no_stock":false},{"code":"314","code_safe":"314","name":"Collar Talle 5","category":"Paseo y Transporte","price":1792.0,"photo":"png","no_stock":false},{"code":"315","code_safe":"315","name":"Collar Talle 6","category":"Paseo y Transporte","price":1825.0,"photo":"png","no_stock":false},{"code":"316","code_safe":"316","name":"Collar Talle 7","category":"Paseo y Transporte","price":2224.0,"photo":"png","no_stock":false},{"code":"317","code_safe":"317","name":"Collar Talle 8","category":"Paseo y Transporte","price":2275.0,"photo":"png","no_stock":false},{"code":"9","code_safe":"9","name":"Collar Talle 9","category":"Paseo y Transporte","price":2320.0,"photo":"png","no_stock":false},{"code":"CP2","code_safe":"CP2","name":"Collar Perritos 2.0","category":"Paseo y Transporte","price":1690.0,"photo":"png","no_stock":false},{"code":"CR1","code_safe":"CR1","name":"Correa regulable 2Mts Talle 1","category":"Paseo y Transporte","price":3416.0,"photo":"png","no_stock":false},{"code":"CR2","code_safe":"CR2","name":"Correa regulable 2Mts Talle 2","category":"Paseo y Transporte","price":3760.0,"photo":"png","no_stock":false},{"code":"CR3","code_safe":"CR3","name":"Correa regulable 2Mts Talle 3","category":"Paseo y Transporte","price":4291.0,"photo":"png","no_stock":false},{"code":"CR4","code_safe":"CR4","name":"Correa regulable 2Mts Talle 4","category":"Paseo y Transporte","price":4710.0,"photo":"png","no_stock":false},{"code":"CSS","code_safe":"CSS","name":"Collar Regulable Sublimado Talle S","category":"Paseo y Transporte","price":1070.0,"photo":"png","no_stock":false},{"code":"CSM","code_safe":"CSM","name":"Collar Regulable Sublimado Talle M","category":"Paseo y Transporte","price":1420.0,"photo":"png","no_stock":false},{"code":"CSL","code_safe":"CSL","name":"Collar Regulable Sublimado Talle L","category":"Paseo y Transporte","price":1760.0,"photo":"png","no_stock":false},{"code":"CSXL","code_safe":"CSXL","name":"Collar Regulable Sublimado Talle XL","category":"Paseo y Transporte","price":2140.0,"photo":"png","no_stock":false},{"code":"974","code_safe":"974","name":"correa alpina + pretal fluor 1.5","category":"Paseo y Transporte","price":3590.0,"photo":"png","no_stock":false},{"code":"354","code_safe":"354","name":"Cadena de Paseo Chica 2,0mm","category":"Paseo y Transporte","price":1490.0,"photo":"png","no_stock":false},{"code":"CPGM","code_safe":"CPGM","name":"Correa + Pretal p/gato C/mochila","category":"Paseo y Transporte","price":5990.0,"photo":"png","no_stock":false},{"code":"345","code_safe":"345","name":"Cadena de Paseo Mediana 3,0mm","category":"Paseo y Transporte","price":2390.0,"photo":"png","no_stock":false},{"code":"344","code_safe":"344","name":"Cadena de Paseo Grande 4mm","category":"Paseo y Transporte","price":3190.0,"photo":"png","no_stock":false},{"code":"369","code_safe":"369","name":"Correa alpina + pretal pechera","category":"Paseo y Transporte","price":5490.0,"photo":"png","no_stock":false},{"code":"418","code_safe":"418","name":"Correa + Pretal p/gato Común","category":"Paseo y Transporte","price":2390.0,"photo":"png","no_stock":false},{"code":"78","code_safe":"78","name":"Retractil 8Metros + Linterna Tiraje 45kg","category":"Paseo y Transporte","price":28790.0,"photo":"png","no_stock":false},{"code":"79","code_safe":"79","name":"Retractil doble 3Metros + Linterna Tiraje 22kg","category":"Paseo y Transporte","price":29900.0,"photo":"png","no_stock":false},{"code":"803","code_safe":"803","name":"Correa Paseo y Entrenamiento 5mtr","category":"Paseo y Transporte","price":8590.0,"photo":"png","no_stock":false},{"code":"133","code_safe":"133","name":"Correa Retráctil 3 Metros (PVC / Cinta Poliéster)","category":"Paseo y Transporte","price":3890.0,"photo":"png","no_stock":false},{"code":"802","code_safe":"802","name":"Correa Paseo y Entrenamiento 3mtr","category":"Paseo y Transporte","price":6450.0,"photo":"png","no_stock":false},{"code":"301","code_safe":"301","name":"Correa talle 1","category":"Paseo y Transporte","price":2650.0,"photo":"png","no_stock":false},{"code":"302","code_safe":"302","name":"Correa talle 2","category":"Paseo y Transporte","price":2800.0,"photo":"png","no_stock":false},{"code":"303","code_safe":"303","name":"Correa talle 3","category":"Paseo y Transporte","price":4250.0,"photo":"png","no_stock":false},{"code":"304","code_safe":"304","name":"Correa talle 4","category":"Paseo y Transporte","price":4400.0,"photo":"png","no_stock":false},{"code":"ATP","code_safe":"ATP","name":"Asiento de auto trasero","category":"Paseo y Transporte","price":22950.0,"photo":"png","no_stock":false},{"code":"306","code_safe":"306","name":"Correa Ahorque","category":"Paseo y Transporte","price":4250.0,"photo":"png","no_stock":false},{"code":"754","code_safe":"754","name":"Conjunto Pretal + Correa Nato XL","category":"Paseo y Transporte","price":27900.0,"photo":"png","no_stock":false},{"code":"493","code_safe":"493","name":"Pet-Dog Arnés Talle S","category":"Paseo y Transporte","price":8990.0,"photo":"png","no_stock":false},{"code":"494","code_safe":"494","name":"Pet-Dog Arnés Talle M","category":"Paseo y Transporte","price":9290.0,"photo":"png","no_stock":false},{"code":"495","code_safe":"495","name":"Pet-Dog Arnés Talle L","category":"Paseo y Transporte","price":9680.0,"photo":"png","no_stock":false},{"code":"496","code_safe":"496","name":"Pet-Dog Arnés Talle XL","category":"Paseo y Transporte","price":9990.0,"photo":"png","no_stock":false},{"code":"476","code_safe":"476","name":"Pretal acolchonado importado talle XS","category":"Paseo y Transporte","price":4650.0,"photo":"png","no_stock":false},{"code":"473","code_safe":"473","name":"Pretal acolchonado importado talle S","category":"Paseo y Transporte","price":5790.0,"photo":"png","no_stock":false},{"code":"474","code_safe":"474","name":"Pretal acolchonado importado talle M","category":"Paseo y Transporte","price":6190.0,"photo":"png","no_stock":false},{"code":"475","code_safe":"475","name":"Pretal acolchonado importado talle L","category":"Paseo y Transporte","price":6950.0,"photo":"png","no_stock":false},{"code":"908","code_safe":"908","name":"Pretal acolchonado importado talle XL","category":"Paseo y Transporte","price":7490.0,"photo":"png","no_stock":false},{"code":"CPSS","code_safe":"CPSS","name":"Correa + Pretal Sublimado Regu. Talle S","category":"Paseo y Transporte","price":6590.0,"photo":"png","no_stock":false},{"code":"CPSM","code_safe":"CPSM","name":"Correa + Pretal Sublimado Regu. Talle M","category":"Paseo y Transporte","price":7720.0,"photo":"png","no_stock":false},{"code":"CPSL","code_safe":"CPSL","name":"Correa + Pretal Sublimado Regu. Talle L","category":"Paseo y Transporte","price":9250.0,"photo":"png","no_stock":false},{"code":"CPSXL","code_safe":"CPSXL","name":"Correa + Pretal Sublimado Regu. Talle XL","category":"Paseo y Transporte","price":11480.0,"photo":"png","no_stock":false},{"code":"328/356","code_safe":"328_356","name":"Pretal + Correa Talle XS/GATO","category":"Paseo y Transporte","price":5850.0,"photo":null,"no_stock":false},{"code":"329","code_safe":"329","name":"Pretal + Correa Talle S","category":"Paseo y Transporte","price":6010.0,"photo":"png","no_stock":false},{"code":"330","code_safe":"330","name":"Pretal + Correa Talle M","category":"Paseo y Transporte","price":7050.0,"photo":"png","no_stock":false},{"code":"331","code_safe":"331","name":"Pretal + Correa Talle L","category":"Paseo y Transporte","price":10810.0,"photo":"png","no_stock":false},{"code":"332","code_safe":"332","name":"Pretal + Correa Talle XL","category":"Paseo y Transporte","price":11920.0,"photo":"png","no_stock":false},{"code":"384","code_safe":"384","name":"Pretal Fijo Talle XS","category":"Paseo y Transporte","price":1496.77,"photo":"png","no_stock":false},{"code":"385","code_safe":"385","name":"Pretal Fijo Talle S","category":"Paseo y Transporte","price":2230.47,"photo":"png","no_stock":false},{"code":"386","code_safe":"386","name":"Pretal Fijo Talle M","category":"Paseo y Transporte","price":3238.92,"photo":"png","no_stock":false},{"code":"387","code_safe":"387","name":"Pretal Fijo Talle L","category":"Paseo y Transporte","price":4289.97,"photo":"png","no_stock":false},{"code":"388","code_safe":"388","name":"Pretal Fijo Talle XL","category":"Paseo y Transporte","price":4708.69,"photo":"png","no_stock":false},{"code":"389","code_safe":"389","name":"Pretal Fijo + Correa talle XS","category":"Paseo y Transporte","price":3886.77,"photo":"png","no_stock":false},{"code":"390","code_safe":"390","name":"Pretal Fijo + Correa talle S","category":"Paseo y Transporte","price":4720.47,"photo":"png","no_stock":false},{"code":"391","code_safe":"391","name":"Pretal Fijo + Correa talle M","category":"Paseo y Transporte","price":6923.92,"photo":"png","no_stock":false},{"code":"392","code_safe":"392","name":"Pretal Fijo + Correa talle L","category":"Paseo y Transporte","price":8068.97,"photo":"png","no_stock":false},{"code":"393","code_safe":"393","name":"Pretal Fijo + Correa talle XL","category":"Paseo y Transporte","price":8487.69,"photo":"png","no_stock":false},{"code":"327","code_safe":"327","name":"Pretal Gato","category":"Paseo y Transporte","price":2835.0,"photo":"png","no_stock":false},{"code":"2001","code_safe":"2001","name":"Pretal K9 Importado Talle S","category":"Paseo y Transporte","price":5690.0,"photo":"png","no_stock":false},{"code":"2002","code_safe":"2002","name":"Pretal K9 Importado Talle M","category":"Paseo y Transporte","price":5999.0,"photo":"png","no_stock":false},{"code":"PTNXL","code_safe":"PTNXL","name":"Pretal + correa tipo nato camuflado XL","category":"Paseo y Transporte","price":9890.0,"photo":null,"no_stock":false},{"code":"2003","code_safe":"2003","name":"Pretal K9 Importado Talle L","category":"Paseo y Transporte","price":6750.0,"photo":"png","no_stock":false},{"code":"322","code_safe":"322","name":"Pretal Regulable Talle XS","category":"Paseo y Transporte","price":3200.0,"photo":"png","no_stock":false},{"code":"323","code_safe":"323","name":"Pretal Regulable Talle S","category":"Paseo y Transporte","price":3360.0,"photo":"png","no_stock":false},{"code":"324","code_safe":"324","name":"Pretal Regulable Talle M","category":"Paseo y Transporte","price":4250.0,"photo":"png","no_stock":false},{"code":"325","code_safe":"325","name":"Pretal RegulableTalle L","category":"Paseo y Transporte","price":6560.0,"photo":"png","no_stock":false},{"code":"326","code_safe":"326","name":"Pretal Regulable Talle XL","category":"Paseo y Transporte","price":7520.0,"photo":"png","no_stock":false},{"code":"876","code_safe":"876","name":"Bolso transportador importado varios motivos","category":"Paseo y Transporte","price":18360.0,"photo":"png","no_stock":false},{"code":"604","code_safe":"604","name":"Bolso Transportador Estampado","category":"Paseo y Transporte","price":17850.0,"photo":"png","no_stock":false},{"code":"606","code_safe":"606","name":"Bolso Transportador Liso","category":"Paseo y Transporte","price":16490.0,"photo":"png","no_stock":false},{"code":"875","code_safe":"875","name":"Mochila Pokemón","category":"Paseo y Transporte","price":24900.0,"photo":"png","no_stock":false},{"code":"REM","code_safe":"REM","name":"Bolso Transportador Rem Chico","category":"Paseo y Transporte","price":22900.0,"photo":"png","no_stock":false},{"code":"1277","code_safe":"1277","name":"Transportadora rigida 49*31*32","category":"Paseo y Transporte","price":29990.0,"photo":"png","no_stock":false},{"code":"1278","code_safe":"1278","name":"Transportadora rigida 58*37*37","category":"Paseo y Transporte","price":48900.0,"photo":"png","no_stock":false},{"code":"1279","code_safe":"1279","name":"Transportadora rigida itzuki 48*31*31","category":"Paseo y Transporte","price":29900.0,"photo":"png","no_stock":false},{"code":"1029","code_safe":"1029","name":"Mochila para mascota capsula","category":"Paseo y Transporte","price":24900.0,"photo":"png","no_stock":false},{"code":"38","code_safe":"38","name":"Mochila Canguro TALLE M","category":"Paseo y Transporte","price":14990.0,"photo":"png","no_stock":false},{"code":"39","code_safe":"39","name":"Mochila Canguro TALLE L","category":"Paseo y Transporte","price":17590.0,"photo":"png","no_stock":false},{"code":"BTR","code_safe":"BTR","name":"Bolso transportador de red 50cm x 28cm x 27cm","category":"Paseo y Transporte","price":24900.0,"photo":"png","no_stock":false},{"code":"BLP","code_safe":"BLP","name":"Bolso anti desgarro liso premium 45x26x26","category":"Paseo y Transporte","price":20690.0,"photo":"png","no_stock":false},{"code":"507","code_safe":"507","name":"Hueso goma chico","category":"Juguetes y Rascadores","price":2377.0,"photo":"png","no_stock":false},{"code":"508","code_safe":"508","name":"Hueso goma grande","category":"Juguetes y Rascadores","price":3198.0,"photo":"png","no_stock":false},{"code":"509","code_safe":"509","name":"Hueso vainilla chico","category":"Juguetes y Rascadores","price":1591.0,"photo":"png","no_stock":false},{"code":"510","code_safe":"510","name":"Hueso vainilla grande","category":"Juguetes y Rascadores","price":2394.64,"photo":"png","no_stock":false},{"code":"511","code_safe":"511","name":"Hueso vainilla XL","category":"Juguetes y Rascadores","price":3684.14,"photo":"png","no_stock":false},{"code":"535","code_safe":"535","name":"Pelota de goma chica","category":"Juguetes y Rascadores","price":1751.81,"photo":"png","no_stock":false},{"code":"536","code_safe":"536","name":"Pelota de goma mediana","category":"Juguetes y Rascadores","price":4177.0,"photo":"png","no_stock":false},{"code":"537","code_safe":"537","name":"Pelota de goma grande","category":"Juguetes y Rascadores","price":6578.82,"photo":"png","no_stock":false},{"code":"534","code_safe":"534","name":"Pelota vainilla grande","category":"Juguetes y Rascadores","price":4819.65,"photo":"png","no_stock":false},{"code":"532","code_safe":"532","name":"Pelota vainilla chica","category":"Juguetes y Rascadores","price":1446.45,"photo":"png","no_stock":false},{"code":"533","code_safe":"533","name":"Pelota vainilla mediana","category":"Juguetes y Rascadores","price":2695.71,"photo":"png","no_stock":false},{"code":"528","code_safe":"528","name":"Soga alpina pelota S401","category":"Juguetes y Rascadores","price":3554.36,"photo":"png","no_stock":false},{"code":"529","code_safe":"529","name":"Soga alpina pelota S501","category":"Juguetes y Rascadores","price":3851.0,"photo":"png","no_stock":false},{"code":"PPA","code_safe":"PPA","name":"Pato porta alimento","category":"Juguetes y Rascadores","price":15490.0,"photo":"png","no_stock":false},{"code":"Tunel1","code_safe":"Tunel1","name":"Tunel Arcoiris","category":"Juguetes y Rascadores","price":14490.0,"photo":"png","no_stock":false},{"code":"1201","code_safe":"1201","name":"Track Ball Curvo Gatos","category":"Juguetes y Rascadores","price":6990.0,"photo":"png","no_stock":false},{"code":"599","code_safe":"599","name":"Ratón interactivo a control remoto","category":"Juguetes y Rascadores","price":11900.0,"photo":"png","no_stock":false},{"code":"1210","code_safe":"1210","name":"Comedero Inteligente Mano","category":"Juguetes y Rascadores","price":12750.0,"photo":"png","no_stock":false},{"code":"1207","code_safe":"1207","name":"Pelota usb con cola grande","category":"Juguetes y Rascadores","price":3999.0,"photo":"png","no_stock":false},{"code":"PZ","code_safe":"PZ","name":"Peluche Zapallo","category":"Juguetes y Rascadores","price":1835.0,"photo":"png","no_stock":false},{"code":"931","code_safe":"931","name":"Pelota Rígida Fluor 5.5cm","category":"Juguetes y Rascadores","price":1290.0,"photo":"png","no_stock":false},{"code":"TM3","code_safe":"TM3","name":"Pelota tenis x3 Mini","category":"Juguetes y Rascadores","price":1699.0,"photo":"png","no_stock":false},{"code":"PGS","code_safe":"PGS","name":"Pelota Grande Saltarina","category":"Juguetes y Rascadores","price":5990.0,"photo":"png","no_stock":false},{"code":"986","code_safe":"986","name":"Fresbee OFERTA","category":"Juguetes y Rascadores","price":999.0,"photo":"png","no_stock":false},{"code":"130","code_safe":"130","name":"Mordillo estrella grueso","category":"Juguetes y Rascadores","price":990.0,"photo":"png","no_stock":false},{"code":"939","code_safe":"939","name":"Cilindro sisal con pluma","category":"Juguetes y Rascadores","price":1290.0,"photo":"png","no_stock":false},{"code":"MSM","code_safe":"MSM","name":"Muñeco soga mordillo","category":"Juguetes y Rascadores","price":6390.0,"photo":"png","no_stock":false},{"code":"PT10","code_safe":"PT10","name":"Pelota Tenis Grande 13cm","category":"Juguetes y Rascadores","price":6499.0,"photo":"png","no_stock":false},{"code":"jb1","code_safe":"jb1","name":"Canasta p/gato porta alimento c/pelota","category":"Juguetes y Rascadores","price":5490.0,"photo":"png","no_stock":false},{"code":"865","code_safe":"865","name":"Pantufla peluche c/chifle","category":"Juguetes y Rascadores","price":2590.0,"photo":"png","no_stock":false},{"code":"531","code_safe":"531","name":"Raton c/chifle pack x4","category":"Juguetes y Rascadores","price":2190.0,"photo":"png","no_stock":false},{"code":"1204","code_safe":"1204","name":"Pelota Sisal Brillosa","category":"Juguetes y Rascadores","price":949.0,"photo":"png","no_stock":false},{"code":"938","code_safe":"938","name":"Hierba gatera giratoria c/pegatina Gato","category":"Juguetes y Rascadores","price":2940.0,"photo":"png","no_stock":false},{"code":"898","code_safe":"898","name":"Tirador 4 Nudos 50cm","category":"Juguetes y Rascadores","price":3490.0,"photo":"png","no_stock":false},{"code":"870","code_safe":"870","name":"Mordillo c/hueso rigido","category":"Juguetes y Rascadores","price":2150.0,"photo":"png","no_stock":false},{"code":"928","code_safe":"928","name":"Pelota plegable saltarina chica","category":"Juguetes y Rascadores","price":2295.0,"photo":"png","no_stock":false},{"code":"922","code_safe":"922","name":"juguete balancin c/ratón","category":"Juguetes y Rascadores","price":1575.0,"photo":"png","no_stock":false},{"code":"468","code_safe":"468","name":"Tirador 5 Nudos 60cm","category":"Juguetes y Rascadores","price":4490.0,"photo":"png","no_stock":false},{"code":"573","code_safe":"573","name":"Hamster peluche a cuerda","category":"Juguetes y Rascadores","price":1990.0,"photo":"png","no_stock":false},{"code":"1202","code_safe":"1202","name":"MordillO hueso cachorro","category":"Juguetes y Rascadores","price":1290.0,"photo":"png","no_stock":false},{"code":"895","code_safe":"895","name":"Pez chifle","category":"Juguetes y Rascadores","price":1200.0,"photo":"png","no_stock":false},{"code":"425","code_safe":"425","name":"Pelota Interactiva usb Mediana","category":"Juguetes y Rascadores","price":6990.0,"photo":"png","no_stock":false},{"code":"551","code_safe":"551","name":"Cilindro Sisal Largo c/pluma","category":"Juguetes y Rascadores","price":2040.0,"photo":"png","no_stock":false},{"code":"1253","code_safe":"1253","name":"Frutilla/uva/sandia trompo","category":"Juguetes y Rascadores","price":5190.0,"photo":"png","no_stock":false},{"code":"429","code_safe":"429","name":"Varilla Grande Rigida con chifle","category":"Juguetes y Rascadores","price":4090.0,"photo":"png","no_stock":false},{"code":"PEAN","code_safe":"PEAN","name":"Peluche Animalitos","category":"Juguetes y Rascadores","price":1670.0,"photo":"png","no_stock":false},{"code":"TDS","code_safe":"TDS","name":"Tirador doble de soga","category":"Juguetes y Rascadores","price":2050.0,"photo":"png","no_stock":false},{"code":"MSRD","code_safe":"MSRD","name":"Mordillo silicona rigido doble","category":"Juguetes y Rascadores","price":4890.0,"photo":"png","no_stock":false},{"code":"2320","code_safe":"2320","name":"Delfin silicona c/hierba gatera","category":"Juguetes y Rascadores","price":4290.0,"photo":"png","no_stock":false},{"code":"1280","code_safe":"1280","name":"Hueso Rígido mediano","category":"Juguetes y Rascadores","price":2890.0,"photo":"png","no_stock":false},{"code":"1281","code_safe":"1281","name":"Mordillo Y rígido","category":"Juguetes y Rascadores","price":2990.0,"photo":null,"no_stock":false},{"code":"455","code_safe":"455","name":"Torre Interactiva para gato","category":"Juguetes y Rascadores","price":7490.0,"photo":"png","no_stock":false},{"code":"427","code_safe":"427","name":"Mordillo Chupete chico","category":"Juguetes y Rascadores","price":940.0,"photo":"png","no_stock":false},{"code":"MCXL","code_safe":"MCXL","name":"Mordillo Chupete XL","category":"Juguetes y Rascadores","price":1899.0,"photo":"png","no_stock":false},{"code":"954","code_safe":"954","name":"Hueso Rígido Limpiadientes","category":"Juguetes y Rascadores","price":2890.0,"photo":"png","no_stock":false},{"code":"557","code_safe":"557","name":"Aro mordillo c/espinas","category":"Juguetes y Rascadores","price":1845.0,"photo":"png","no_stock":false},{"code":"943","code_safe":"943","name":"Raton sisal Gigante","category":"Juguetes y Rascadores","price":6375.0,"photo":"png","no_stock":false},{"code":"554","code_safe":"554","name":"Mordillo Hueso Galleta/estrella con Soga","category":"Juguetes y Rascadores","price":1199.0,"photo":"png","no_stock":false},{"code":"539","code_safe":"539","name":"Mordillo Hueso Goma","category":"Juguetes y Rascadores","price":1299.0,"photo":"png","no_stock":false},{"code":"PH","code_safe":"PH","name":"Peluche Hueso","category":"Juguetes y Rascadores","price":3990.0,"photo":"png","no_stock":false},{"code":"596","code_safe":"596","name":"Varita c/pez o pluma peluche","category":"Juguetes y Rascadores","price":1899.0,"photo":"png","no_stock":false},{"code":"927","code_safe":"927","name":"Animales a cuerda","category":"Juguetes y Rascadores","price":1470.0,"photo":"png","no_stock":false},{"code":"1256","code_safe":"1256","name":"Chorizo c/soga","category":"Juguetes y Rascadores","price":2850.0,"photo":"png","no_stock":false},{"code":"919","code_safe":"919","name":"Hueso reflectante peluche c/chifle","category":"Juguetes y Rascadores","price":3299.0,"photo":"png","no_stock":false},{"code":"545","code_safe":"545","name":"Pack x3 Juguete Gato Ratón/Bola/Rueda","category":"Juguetes y Rascadores","price":1890.0,"photo":"png","no_stock":false},{"code":"PCBR","code_safe":"PCBR","name":"Peluche cabrita con sogas","category":"Juguetes y Rascadores","price":4399.0,"photo":"png","no_stock":false},{"code":"523","code_safe":"523","name":"Raton usb con cola","category":"Juguetes y Rascadores","price":4990.0,"photo":"png","no_stock":false},{"code":"910","code_safe":"910","name":"Peluche Estrella","category":"Juguetes y Rascadores","price":1690.0,"photo":"png","no_stock":false},{"code":"942","code_safe":"942","name":"Paleta helado 3 colores","category":"Juguetes y Rascadores","price":1845.0,"photo":"png","no_stock":false},{"code":"522","code_safe":"522","name":"Atomo con cascabel","category":"Juguetes y Rascadores","price":1590.0,"photo":"png","no_stock":false},{"code":"514","code_safe":"514","name":"Pelota con LED","category":"Juguetes y Rascadores","price":1399.0,"photo":"png","no_stock":false},{"code":"Cip1","code_safe":"Cip1","name":"Caniche interactivo parlante","category":"Juguetes y Rascadores","price":6399.0,"photo":"png","no_stock":false},{"code":"635","code_safe":"635","name":"Pelota Dental Dosificadora 7cm","category":"Juguetes y Rascadores","price":3340.0,"photo":"png","no_stock":false},{"code":"SHL","code_safe":"SHL","name":"Soga con hueso rigido limpiadientes","category":"Juguetes y Rascadores","price":3190.0,"photo":"png","no_stock":false},{"code":"PT7","code_safe":"PT7","name":"Pelota Trenzada 7cm","category":"Juguetes y Rascadores","price":2090.0,"photo":"png","no_stock":false},{"code":"950","code_safe":"950","name":"Pelota pulpito mediana","category":"Juguetes y Rascadores","price":3150.0,"photo":"png","no_stock":false},{"code":"1019","code_safe":"1019","name":"Pelota dental dosificadora mediana","category":"Juguetes y Rascadores","price":2190.0,"photo":"png","no_stock":false},{"code":"C31","code_safe":"C31","name":"Comedero inteligente 3 en 1","category":"Juguetes y Rascadores","price":12500.0,"photo":"png","no_stock":false},{"code":"447","code_safe":"447","name":"Pelota Pulpito chica","category":"Juguetes y Rascadores","price":1635.0,"photo":"png","no_stock":false},{"code":"VRP","code_safe":"VRP","name":"Varita con raton peludo","category":"Juguetes y Rascadores","price":1590.0,"photo":"png","no_stock":false},{"code":"925","code_safe":"925","name":"Pelota Pulpito Grande","category":"Juguetes y Rascadores","price":4690.0,"photo":"png","no_stock":false},{"code":"504","code_safe":"504","name":"Pelota Trenzada 5cm","category":"Juguetes y Rascadores","price":1575.0,"photo":"png","no_stock":false},{"code":"506","code_safe":"506","name":"Pelota Rígida con Dosificador y Sonido","category":"Juguetes y Rascadores","price":3290.0,"photo":"png","no_stock":false},{"code":"559","code_safe":"559","name":"Pelota Dosificador y Sonido chica","category":"Juguetes y Rascadores","price":2720.0,"photo":"png","no_stock":false},{"code":"PPP","code_safe":"PPP","name":"Pata Pollo Peluche","category":"Juguetes y Rascadores","price":2190.0,"photo":"png","no_stock":false},{"code":"503","code_safe":"503","name":"Pelota Soft Chica","category":"Juguetes y Rascadores","price":640.0,"photo":"png","no_stock":false},{"code":"502","code_safe":"502","name":"Pelota Soft Grande","category":"Juguetes y Rascadores","price":785.0,"photo":"png","no_stock":false},{"code":"463","code_safe":"463","name":"Come-Lento Interactivo 3 en 1","category":"Juguetes y Rascadores","price":7690.0,"photo":"png","no_stock":false},{"code":"858","code_safe":"858","name":"Peluche Vaca Aro","category":"Juguetes y Rascadores","price":3690.0,"photo":"png","no_stock":false},{"code":"ASTRO","code_safe":"ASTRO","name":"Dispensador interactivo astronauta","category":"Juguetes y Rascadores","price":12199.0,"photo":"png","no_stock":false},{"code":"1037","code_safe":"1037","name":"Mordillo Aro multicolor de Goma","category":"Juguetes y Rascadores","price":2290.0,"photo":"png","no_stock":false},{"code":"561","code_safe":"561","name":"Pelota tenis x3","category":"Juguetes y Rascadores","price":2390.0,"photo":"png","no_stock":false},{"code":"467","code_safe":"467","name":"Tirador soga con pelota \"Y\"","category":"Juguetes y Rascadores","price":3190.0,"photo":"png","no_stock":false},{"code":"RSR","code_safe":"RSR","name":"Raton c/sopapa y resorte","category":"Juguetes y Rascadores","price":1390.0,"photo":"png","no_stock":false},{"code":"TPT","code_safe":"TPT","name":"Tirador con pelota Trenzada","category":"Juguetes y Rascadores","price":2350.0,"photo":"png","no_stock":false},{"code":"1315","code_safe":"1315","name":"Raton peludo ojon","category":"Juguetes y Rascadores","price":1590.0,"photo":"png","no_stock":false},{"code":"583","code_safe":"583","name":"Peluche Unicornio","category":"Juguetes y Rascadores","price":6690.0,"photo":"png","no_stock":false},{"code":"930","code_safe":"930","name":"Peluche Helado","category":"Juguetes y Rascadores","price":1450.0,"photo":"png","no_stock":false},{"code":"1203","code_safe":"1203","name":"Soga c/pelota de goma","category":"Juguetes y Rascadores","price":2290.0,"photo":"png","no_stock":false},{"code":"SNK","code_safe":"SNK","name":"Peluche Snacks Pop Corn","category":"Juguetes y Rascadores","price":4390.0,"photo":"png","no_stock":false},{"code":"9993","code_safe":"9993","name":"Pelota semi-rígida con pique","category":"Juguetes y Rascadores","price":1999.0,"photo":"png","no_stock":false},{"code":"JGIP","code_safe":"JGIP","name":"Juguete p/gato interactivo c/pelotas","category":"Juguetes y Rascadores","price":10490.0,"photo":"png","no_stock":false},{"code":"987","code_safe":"987","name":"Varita con raton","category":"Juguetes y Rascadores","price":1590.0,"photo":"png","no_stock":false},{"code":"747","code_safe":"747","name":"Pez c/hilo","category":"Juguetes y Rascadores","price":1370.0,"photo":"png","no_stock":false},{"code":"578","code_safe":"578","name":"Pollito/gato pelota chifle","category":"Juguetes y Rascadores","price":1175.0,"photo":"png","no_stock":false},{"code":"538","code_safe":"538","name":"Pollo Parlante Mini 15 cm","category":"Juguetes y Rascadores","price":1050.0,"photo":null,"no_stock":false},{"code":"519","code_safe":"519","name":"Pollo Parlante 40 CM","category":"Juguetes y Rascadores","price":2590.0,"photo":"png","no_stock":false},{"code":"1023","code_safe":"1023","name":"Pollo Parlante 30 CM","category":"Juguetes y Rascadores","price":1938.0,"photo":null,"no_stock":false},{"code":"RG1","code_safe":"RG1","name":"Raton gris c/cola","category":"Juguetes y Rascadores","price":1899.0,"photo":"png","no_stock":false},{"code":"1303","code_safe":"1303","name":"Timbre para mascotas","category":"Juguetes y Rascadores","price":3543.3,"photo":"png","no_stock":false},{"code":"961","code_safe":"961","name":"Tirador soga con hueso rígido","category":"Juguetes y Rascadores","price":2999.0,"photo":"png","no_stock":false},{"code":"947","code_safe":"947","name":"Perrito con chifle","category":"Juguetes y Rascadores","price":1299.0,"photo":"png","no_stock":false},{"code":"ACR","code_safe":"ACR","name":"auto usb c/control remoto","category":"Juguetes y Rascadores","price":17900.0,"photo":"png","no_stock":false},{"code":"AUC","code_safe":"AUC","name":"auto usb c/ cola","category":"Juguetes y Rascadores","price":15500.0,"photo":"png","no_stock":false},{"code":"POD","code_safe":"POD","name":"Pelota Ovalada Dosificadora","category":"Juguetes y Rascadores","price":2890.0,"photo":"png","no_stock":false},{"code":"520","code_safe":"520","name":"Pesita con chifle 14cm","category":"Juguetes y Rascadores","price":1499.0,"photo":"png","no_stock":false},{"code":"563","code_safe":"563","name":"Mordillo Tri-Hueso rígido","category":"Juguetes y Rascadores","price":3390.0,"photo":"png","no_stock":false},{"code":"531","code_safe":"531","name":"Ratón con Chifle (Pack 4 unidades)","category":"Juguetes y Rascadores","price":1980.0,"photo":"png","no_stock":false},{"code":"524","code_safe":"524","name":"Pesa rigida Limpiadientes","category":"Juguetes y Rascadores","price":4690.0,"photo":"png","no_stock":false},{"code":"PCP","code_safe":"PCP","name":"Pelota con chifle y pinches","category":"Juguetes y Rascadores","price":1290.0,"photo":"png","no_stock":false},{"code":"569","code_safe":"569","name":"Mordillo Hueso Goma Chico","category":"Juguetes y Rascadores","price":980.0,"photo":"png","no_stock":false},{"code":"634","code_safe":"634","name":"Esfera jaulita c/raton","category":"Juguetes y Rascadores","price":1590.0,"photo":"png","no_stock":false},{"code":"920","code_safe":"920","name":"Soga doble c/pelotas tenis","category":"Juguetes y Rascadores","price":3490.0,"photo":"png","no_stock":false},{"code":"PGD","code_safe":"PGD","name":"Pelota de goma dura roja","category":"Juguetes y Rascadores","price":2649.0,"photo":"png","no_stock":false},{"code":"1273","code_safe":"1273","name":"Hierba gatera pegatina c/resorte","category":"Juguetes y Rascadores","price":2690.0,"photo":"png","no_stock":false},{"code":"541","code_safe":"541","name":"Tirador Trenzado 56CM","category":"Juguetes y Rascadores","price":4490.0,"photo":"png","no_stock":false},{"code":"937","code_safe":"937","name":"Varita con peluche grande","category":"Juguetes y Rascadores","price":2890.0,"photo":"png","no_stock":false},{"code":"485","code_safe":"485","name":"Tirador Soga 24cm","category":"Juguetes y Rascadores","price":1435.0,"photo":"png","no_stock":false},{"code":"1022","code_safe":"1022","name":"Cuchara dispensadora de alimento p/gato","category":"Juguetes y Rascadores","price":3390.0,"photo":"png","no_stock":false},{"code":"CNN","code_safe":"CNN","name":"Chupete Cat-nip x2","category":"Juguetes y Rascadores","price":1899.0,"photo":"png","no_stock":false},{"code":"TPD","code_safe":"TPD","name":"Tirador con pelota dosificadora","category":"Juguetes y Rascadores","price":4590.0,"photo":"png","no_stock":false},{"code":"PFRU","code_safe":"PFRU","name":"Peluche Frutilla Grande","category":"Juguetes y Rascadores","price":8290.0,"photo":"png","no_stock":false},{"code":"970","code_safe":"970","name":"Raton peludo c/cola x2","category":"Juguetes y Rascadores","price":1899.0,"photo":"png","no_stock":false},{"code":"940","code_safe":"940","name":"Palta interactiva c/ hierba gatera","category":"Juguetes y Rascadores","price":2199.0,"photo":"png","no_stock":false},{"code":"905","code_safe":"905","name":"Puercoespin con chifle","category":"Juguetes y Rascadores","price":1450.0,"photo":"png","no_stock":false},{"code":"549","code_safe":"549","name":"Queso interactivo c/hierba gatera","category":"Juguetes y Rascadores","price":2990.0,"photo":"png","no_stock":false},{"code":"DLC","code_safe":"DLC","name":"Dinosaurio Latex c/chifle","category":"Juguetes y Rascadores","price":2090.0,"photo":"png","no_stock":false},{"code":"808","code_safe":"808","name":"Pelota Interactiva USB","category":"Juguetes y Rascadores","price":7990.0,"photo":"png","no_stock":false},{"code":"807","code_safe":"807","name":"Hierba Gatera con Tapa","category":"Juguetes y Rascadores","price":1.99,"photo":"png","no_stock":false},{"code":"462","code_safe":"462","name":"Tirador Infinito","category":"Juguetes y Rascadores","price":1599.0,"photo":"png","no_stock":false},{"code":"598","code_safe":"598","name":"Tirador Trenzado 30cm","category":"Juguetes y Rascadores","price":2180.0,"photo":"png","no_stock":false},{"code":"469","code_safe":"469","name":"soga con nudo y pelota","category":"Juguetes y Rascadores","price":2390.0,"photo":"png","no_stock":false},{"code":"VAG","code_safe":"VAG","name":"Varita alambre c/gusano","category":"Juguetes y Rascadores","price":1690.0,"photo":"png","no_stock":false},{"code":"20","code_safe":"20","name":"Peluche largo Animales","category":"Juguetes y Rascadores","price":3090.0,"photo":"png","no_stock":false},{"code":"889","code_safe":"889","name":"Mordillo limpia dientes p/refrigerar","category":"Juguetes y Rascadores","price":2375.0,"photo":"png","no_stock":false},{"code":"28","code_safe":"28","name":"Mordillo limpia dientes p/refrigerar","category":"Juguetes y Rascadores","price":2375.0,"photo":"png","no_stock":false},{"code":"8PCF","code_safe":"8PCF","name":"Pelota con chifle futbol","category":"Juguetes y Rascadores","price":1299.0,"photo":"png","no_stock":false},{"code":"1312","code_safe":"1312","name":"Pelota rugby silicona enrejada","category":"Juguetes y Rascadores","price":4500.0,"photo":"png","no_stock":false},{"code":"1314","code_safe":"1314","name":"Pelota rígida LED","category":"Juguetes y Rascadores","price":2990.0,"photo":"png","no_stock":false},{"code":"1247","code_safe":"1247","name":"Dispensador de alimento interactivo p/gato","category":"Juguetes y Rascadores","price":7690.0,"photo":"png","no_stock":false},{"code":"1313","code_safe":"1313","name":"Pelota Led siliconada grande","category":"Juguetes y Rascadores","price":4699.0,"photo":"png","no_stock":false},{"code":"990","code_safe":"990","name":"Mordillo Musical estrellitas","category":"Juguetes y Rascadores","price":1685.0,"photo":"png","no_stock":false},{"code":"896","code_safe":"896","name":"Pesa de Goma acanalada","category":"Juguetes y Rascadores","price":1680.0,"photo":"png","no_stock":false},{"code":"TGT","code_safe":"TGT","name":"Tirador Garrote Trenzado","category":"Juguetes y Rascadores","price":3790.0,"photo":"png","no_stock":false},{"code":"902","code_safe":"902","name":"Mordillo Nota musical","category":"Juguetes y Rascadores","price":1685.0,"photo":"png","no_stock":false},{"code":"ppi","code_safe":"ppi","name":"Peluche Pez Interactivo USB","category":"Juguetes y Rascadores","price":6890.0,"photo":"png","no_stock":false},{"code":"971","code_safe":"971","name":"Gafas/anteojos","category":"Juguetes y Rascadores","price":1835.0,"photo":null,"no_stock":false},{"code":"971","code_safe":"971","name":"Hueso Mordillo con Agujeritos","category":"Juguetes y Rascadores","price":1290.0,"photo":"png","no_stock":false},{"code":"1125","code_safe":"1125","name":"Pelota Rugby Chica","category":"Juguetes y Rascadores","price":1790.0,"photo":"png","no_stock":false},{"code":"989","code_safe":"989","name":"Mordillo Hueso Liso","category":"Juguetes y Rascadores","price":1320.0,"photo":"png","no_stock":false},{"code":"1010","code_safe":"1010","name":"Varita raton c/colitas","category":"Juguetes y Rascadores","price":1790.0,"photo":"png","no_stock":false},{"code":"PDS","code_safe":"PDS","name":"Pesa dosificadora silicona","category":"Juguetes y Rascadores","price":2650.0,"photo":"png","no_stock":false},{"code":"STLD","code_safe":"STLD","name":"Soga con tubo limpia dientes","category":"Juguetes y Rascadores","price":2650.0,"photo":"png","no_stock":false},{"code":"PHG","code_safe":"PHG","name":"Pelota hierba gatera y pluma","category":"Juguetes y Rascadores","price":1835.0,"photo":"png","no_stock":false},{"code":"1216","code_safe":"1216","name":"Rascador Tito's 34x7x11","category":"Juguetes y Rascadores","price":9070.0,"photo":"png","no_stock":false},{"code":"1217","code_safe":"1217","name":"Rascador Olita 49x4x19.5","category":"Juguetes y Rascadores","price":7465.0,"photo":"png","no_stock":false},{"code":"1218","code_safe":"1218","name":"Cara de Gato","category":"Juguetes y Rascadores","price":9190.0,"photo":"png","no_stock":false},{"code":"1219","code_safe":"1219","name":"Cama Victoria 47x9x18.5","category":"Juguetes y Rascadores","price":12725.0,"photo":"png","no_stock":false},{"code":"1232","code_safe":"1232","name":"Rascador Taylor 46.5x7.5x16.5","category":"Juguetes y Rascadores","price":null,"photo":"png","no_stock":false},{"code":"1233","code_safe":"1233","name":"Rascador Acuña 52.5x14x17.5","category":"Juguetes y Rascadores","price":19990.0,"photo":"png","no_stock":false},{"code":"1213","code_safe":"1213","name":"Rascador Infinity 59x20x20","category":"Juguetes y Rascadores","price":22459.0,"photo":null,"no_stock":false},{"code":"1212","code_safe":"1212","name":"Rascador Lore's Grande C/Pelota","category":"Juguetes y Rascadores","price":16990.0,"photo":"png","no_stock":false},{"code":"1215","code_safe":"1215","name":"Rascador Bermuda","category":"Juguetes y Rascadores","price":2530.0,"photo":"png","no_stock":false},{"code":"1214","code_safe":"1214","name":"Rascador Guiza","category":"Juguetes y Rascadores","price":2530.0,"photo":"png","no_stock":false},{"code":"1238","code_safe":"1238","name":"Mini Acuña 25x6x14","category":"Juguetes y Rascadores","price":5340.0,"photo":"png","no_stock":false},{"code":"1239","code_safe":"1239","name":"Mini Infinity 30x10x14","category":"Juguetes y Rascadores","price":6955.0,"photo":"png","no_stock":false},{"code":"1237","code_safe":"1237","name":"Sillón Simón 50x14x22","category":"Juguetes y Rascadores","price":24500.0,"photo":"png","no_stock":false},{"code":"1241","code_safe":"1241","name":"Rascador Cilindro Grande 20x8","category":"Juguetes y Rascadores","price":1915.0,"photo":"png","no_stock":false},{"code":"RC1","code_safe":"RC1","name":"Rascador Casa Rectangular 1","category":"Juguetes y Rascadores","price":36900.0,"photo":"png","no_stock":false},{"code":"RC2","code_safe":"RC2","name":"Rascador Casa Rectangular 2","category":"Juguetes y Rascadores","price":36900.0,"photo":"png","no_stock":false},{"code":"1244","code_safe":"1244","name":"Box Interactiva p/gato c/pelota","category":"Juguetes y Rascadores","price":12359.0,"photo":"png","no_stock":false},{"code":"1245","code_safe":"1245","name":"Rascador Interactivo Katty's","category":"Juguetes y Rascadores","price":12615.0,"photo":"png","no_stock":false},{"code":"RASPE","code_safe":"RASPE","name":"Rascador Pescado 41x21","category":"Juguetes y Rascadores","price":7990.0,"photo":"png","no_stock":false},{"code":"LR1","code_safe":"LR1","name":"Juguete interactivo lanza recompensa","category":"Juguetes y Rascadores","price":40500.0,"photo":"png","no_stock":false},{"code":"RSG","code_safe":"RSG","name":"Rascador Sisal Grande 40x26cm","category":"Juguetes y Rascadores","price":14850.0,"photo":"png","no_stock":false},{"code":"RPR","code_safe":"RPR","name":"Rascador Palmera Renatta 77x36cm","category":"Juguetes y Rascadores","price":63500.0,"photo":"png","no_stock":false},{"code":"1275","code_safe":"1275","name":"Rascador Casita 3 juguetes","category":"Juguetes y Rascadores","price":59900.0,"photo":"png","no_stock":false},{"code":"ct1","code_safe":"ct1","name":"Rascador Simple grande","category":"Juguetes y Rascadores","price":24000.0,"photo":"png","no_stock":false},{"code":"ct2","code_safe":"ct2","name":"Rascador Simple chico","category":"Juguetes y Rascadores","price":13500.0,"photo":"png","no_stock":false},{"code":"ct3","code_safe":"ct3","name":"Rascador Puente c/camita","category":"Juguetes y Rascadores","price":51500.0,"photo":"png","no_stock":false},{"code":"ct4","code_safe":"ct4","name":"Gimnasio Pasadizo c/camita","category":"Juguetes y Rascadores","price":60700.0,"photo":"png","no_stock":false},{"code":"1235","code_safe":"1235","name":"Rascador 3 niveles con pelota","category":"Juguetes y Rascadores","price":54990.0,"photo":"png","no_stock":false},{"code":"1234","code_safe":"1234","name":"Rampa antideslizante p/ mascotas 32x87cm","category":"Juguetes y Rascadores","price":49600.0,"photo":"png","no_stock":false},{"code":"COLIMP","code_safe":"COLIMP","name":"Colchoneta anti desgarro doble impermeable 95x65","category":"Camas y Ropa","price":18390.0,"photo":"png","no_stock":false},{"code":"601","code_safe":"601","name":"Colchoneta Anti-desgarro 60x60cm","category":"Camas y Ropa","price":14450.0,"photo":null,"no_stock":false},{"code":"602","code_safe":"602","name":"Colchoneta Anti-desgarro 80x80cm","category":"Camas y Ropa","price":16150.0,"photo":"png","no_stock":false},{"code":"603","code_safe":"603","name":"Colchoneta Anti-desgarro 100x100cm","category":"Camas y Ropa","price":18790.0,"photo":"png","no_stock":false},{"code":"furry1","code_safe":"furry1","name":"Sillon furry chico 70x38cm","category":"Camas y Ropa","price":56900.0,"photo":null,"no_stock":false},{"code":"furry2","code_safe":"furry2","name":"Sillon furry grande 93x53cm","category":"Camas y Ropa","price":79990.0,"photo":null,"no_stock":false},{"code":"CTR","code_safe":"CTR","name":"Catre para mascotas 52*45cm","category":"Camas y Ropa","price":11990.0,"photo":"png","no_stock":false},{"code":"CCM","code_safe":"CCM","name":"Carpa Chica p/mascotas","category":"Camas y Ropa","price":16990.0,"photo":"png","no_stock":false},{"code":"127","code_safe":"127","name":"Corral para mascotas Mediano","category":"Camas y Ropa","price":30990.0,"photo":"png","no_stock":false},{"code":"616","code_safe":"616","name":"Nido moisés 75x75cm","category":"Camas y Ropa","price":16990.0,"photo":"png","no_stock":false},{"code":"89","code_safe":"89","name":"Placa Anti-Desgarro (85x65)","category":"Camas y Ropa","price":16190.0,"photo":"png","no_stock":false},{"code":"623","code_safe":"623","name":"Colchoneta Placa Anti-desgarro 65x45","category":"Camas y Ropa","price":10476.0,"photo":"png","no_stock":false},{"code":"615","code_safe":"615","name":"Cubo 3 en 1","category":"Camas y Ropa","price":16990.0,"photo":"png","no_stock":false},{"code":"608","code_safe":"608","name":"Corderito Corazón 60x60 cm","category":"Camas y Ropa","price":16990.0,"photo":"png","no_stock":false},{"code":"1140","code_safe":"1140","name":"Moises Nordico Redondo 60cm","category":"Camas y Ropa","price":27500.0,"photo":"png","no_stock":false},{"code":"617","code_safe":"617","name":"Moisés Tela Talle 1","category":"Camas y Ropa","price":11990.0,"photo":"png","no_stock":false},{"code":"618","code_safe":"618","name":"Moisés Tela Talle 2","category":"Camas y Ropa","price":12750.0,"photo":"png","no_stock":false},{"code":"619","code_safe":"619","name":"Moisés Tela Talle 3","category":"Camas y Ropa","price":13690.0,"photo":"png","no_stock":false},{"code":"9994","code_safe":"9994","name":"Sillón denim con Polar 40x40","category":"Camas y Ropa","price":17270.0,"photo":"png","no_stock":false},{"code":"9995","code_safe":"9995","name":"Sillón denim con Polar 50x50","category":"Camas y Ropa","price":23209.0,"photo":"png","no_stock":false},{"code":"95","code_safe":"95","name":"Moisés Nido Polar 50x50","category":"Camas y Ropa","price":19905.0,"photo":"png","no_stock":false},{"code":"97","code_safe":"97","name":"Moises Ovalado T1(41x38)","category":"Camas y Ropa","price":7765.0,"photo":"png","no_stock":false},{"code":"98","code_safe":"98","name":"Moises Ovalado T2(45x43)","category":"Camas y Ropa","price":8775.0,"photo":"png","no_stock":false},{"code":"99","code_safe":"99","name":"Moises Ovalado T3(55x45)","category":"Camas y Ropa","price":11878.0,"photo":"png","no_stock":false},{"code":"100","code_safe":"100","name":"Colchoneta de Guata en Polar 45x55","category":"Camas y Ropa","price":6389.0,"photo":"png","no_stock":false},{"code":"101","code_safe":"101","name":"Colchoneta de Guata en Polar 50x65","category":"Camas y Ropa","price":8226.0,"photo":"png","no_stock":false},{"code":"102","code_safe":"102","name":"Colchoneta de Guata en Polar 60x80","category":"Camas y Ropa","price":11181.0,"photo":"png","no_stock":false},{"code":"103","code_safe":"103","name":"Colchoneta de Guata Tela 45x55","category":"Camas y Ropa","price":4126.0,"photo":"png","no_stock":false},{"code":"104","code_safe":"104","name":"Colchoneta de Guata Tela 50x65","category":"Camas y Ropa","price":5399.0,"photo":"png","no_stock":false},{"code":"105","code_safe":"105","name":"Colchoneta de Guata Tela 60x80","category":"Camas y Ropa","price":7473.0,"photo":"png","no_stock":false},{"code":"106","code_safe":"106","name":"Colchoneta desmontable 45x65","category":"Camas y Ropa","price":18232.5,"photo":"png","no_stock":false},{"code":"107","code_safe":"107","name":"Colchoneta desmontable 55x75","category":"Camas y Ropa","price":23752.4,"photo":"png","no_stock":false},{"code":"108","code_safe":"108","name":"Colchoneta desmontable 65x85","category":"Camas y Ropa","price":30387.5,"photo":"png","no_stock":false},{"code":"109","code_safe":"109","name":"Colchoneta desmontable 75x95","category":"Camas y Ropa","price":43095.0,"photo":"png","no_stock":false},{"code":"110","code_safe":"110","name":"Sillón denim Gabardina 40x40","category":"Camas y Ropa","price":18359.0,"photo":"png","no_stock":false},{"code":"111","code_safe":"111","name":"Sillón denim Gabardina 50x50","category":"Camas y Ropa","price":24289.0,"photo":"png","no_stock":false},{"code":"813","code_safe":"813","name":"Sillón denim Gabardina 60x60","category":"Camas y Ropa","price":29699.0,"photo":"png","no_stock":false},{"code":"112","code_safe":"112","name":"Moises Tela Vellon Talle 1","category":"Camas y Ropa","price":4832.0,"photo":"png","no_stock":false},{"code":"113","code_safe":"113","name":"Moises Tela Vellon Talle 2","category":"Camas y Ropa","price":5986.0,"photo":"png","no_stock":false},{"code":"114","code_safe":"114","name":"Moises Tela Vellon Talle 3","category":"Camas y Ropa","price":6970.0,"photo":"png","no_stock":false},{"code":"1","code_safe":"1","name":"Moises Nordico Premium 60cm","category":"Camas y Ropa","price":31700.0,"photo":"png","no_stock":false},{"code":"2","code_safe":"2","name":"Moises Nordico Premium 100cm","category":"Camas y Ropa","price":62900.0,"photo":"png","no_stock":false},{"code":"115","code_safe":"115","name":"Moises Tela Vellon Talle 4","category":"Camas y Ropa","price":8445.0,"photo":"png","no_stock":false},{"code":"SMKS","code_safe":"SMKS","name":"Smoking Talle S","category":"Camas y Ropa","price":6390.0,"photo":"png","no_stock":false},{"code":"SMKM","code_safe":"SMKM","name":"Smoking Talle M","category":"Camas y Ropa","price":6390.0,"photo":"png","no_stock":false},{"code":"SMKL","code_safe":"SMKL","name":"Smoking Talle L","category":"Camas y Ropa","price":6390.0,"photo":"png","no_stock":false},{"code":"SMXXL","code_safe":"SMXXL","name":"Smoking Talle XL","category":"Camas y Ropa","price":6390.0,"photo":"png","no_stock":false},{"code":"BBM","code_safe":"BBM","name":"Bombacha Talle M","category":"Camas y Ropa","price":3250.0,"photo":"png","no_stock":false},{"code":"BBL","code_safe":"BBL","name":"Bombacha Talle L","category":"Camas y Ropa","price":3250.0,"photo":"png","no_stock":false},{"code":"CCM","code_safe":"CCM","name":"Campera C/cuello corderito Talle M","category":"Camas y Ropa","price":14300.0,"photo":null,"no_stock":false},{"code":"CCL","code_safe":"CCL","name":"Campera C/cuello corderito Talle L","category":"Camas y Ropa","price":14300.0,"photo":"png","no_stock":false},{"code":"CCXL","code_safe":"CCXL","name":"Campera C/cuello corderito Talle XL","category":"Camas y Ropa","price":14300.0,"photo":"png","no_stock":false},{"code":"CHCL","code_safe":"CHCL","name":"Chaleco Camuflado C/cierre Talle L","category":"Camas y Ropa","price":13900.0,"photo":"png","no_stock":false},{"code":"CHCXL","code_safe":"CHCXL","name":"Chaleco Camuflado C/cierre Talle XL","category":"Camas y Ropa","price":13900.0,"photo":"png","no_stock":false},{"code":"BAL","code_safe":"BAL","name":"Buzo Adidog Talle XL","category":"Camas y Ropa","price":8590.0,"photo":"png","no_stock":false},{"code":"BDM","code_safe":"BDM","name":"Buzo Dinosaurio M","category":"Camas y Ropa","price":8590.0,"photo":"png","no_stock":false},{"code":"BDL","code_safe":"BDL","name":"Buzo Dinosaurio L","category":"Camas y Ropa","price":8590.0,"photo":"png","no_stock":false},{"code":"BDXL","code_safe":"BDXL","name":"Buzo Dinosaurio XL","category":"Camas y Ropa","price":8590.0,"photo":"png","no_stock":false},{"code":"VGM","code_safe":"VGM","name":"Vestido de Gala M","category":"Camas y Ropa","price":6750.0,"photo":"png","no_stock":false},{"code":"VGL","code_safe":"VGL","name":"Vestido de Gala L","category":"Camas y Ropa","price":6750.0,"photo":"png","no_stock":false},{"code":"VGXL","code_safe":"VGXL","name":"Vestido de Gala XL","category":"Camas y Ropa","price":6750.0,"photo":"png","no_stock":false},{"code":"BTL","code_safe":"BTL","name":"Bozal Tela L","category":"Camas y Ropa","price":6750.0,"photo":"png","no_stock":false},{"code":"BTXL","code_safe":"BTXL","name":"Bozal Tela XL","category":"Camas y Ropa","price":6750.0,"photo":"png","no_stock":false},{"code":"BTXXL","code_safe":"BTXXL","name":"Bozal Tela XXL","category":"Camas y Ropa","price":6750.0,"photo":"png","no_stock":false},{"code":"cami1","code_safe":"cami1","name":"Camisa Verano Talle S","category":"Camas y Ropa","price":6990.0,"photo":"png","no_stock":false},{"code":"cami2","code_safe":"cami2","name":"Camisa Verano Talle M","category":"Camas y Ropa","price":6990.0,"photo":"png","no_stock":false},{"code":"cami3","code_safe":"cami3","name":"Camisa Verano Talle L","category":"Camas y Ropa","price":6990.0,"photo":"png","no_stock":false},{"code":"cami4","code_safe":"cami4","name":"Camisa Verano Talle XL","category":"Camas y Ropa","price":7490.0,"photo":"png","no_stock":false},{"code":"cami5","code_safe":"cami5","name":"Camisa Verano Talle XXL","category":"Camas y Ropa","price":7490.0,"photo":"png","no_stock":false},{"code":"1036","code_safe":"1036","name":"Bandanas talle S, M y L","category":"Camas y Ropa","price":990.0,"photo":"png","no_stock":false},{"code":"66","code_safe":"66","name":"Buzo Friza importada talle XS","category":"Camas y Ropa","price":8000.0,"photo":"png","no_stock":false},{"code":"67","code_safe":"67","name":"Buzo Friza importada talle S","category":"Camas y Ropa","price":9600.0,"photo":"png","no_stock":false},{"code":"68","code_safe":"68","name":"Buzo Friza importada talle M","category":"Camas y Ropa","price":10990.0,"photo":"png","no_stock":false},{"code":"69","code_safe":"69","name":"Buzo Friza importada talle L","category":"Camas y Ropa","price":13600.0,"photo":"png","no_stock":false},{"code":"70","code_safe":"70","name":"Buzo Friza importada talle XL","category":"Camas y Ropa","price":15900.0,"photo":"png","no_stock":false},{"code":"866","code_safe":"866","name":"Medias para mascotas x4","category":"Camas y Ropa","price":2090.0,"photo":"png","no_stock":false},{"code":"401","code_safe":"401","name":"Polar liso talle 0 (20cm)","category":"Camas y Ropa","price":820.0,"photo":"png","no_stock":false},{"code":"402","code_safe":"402","name":"Polar liso talle 1 (25cm)","category":"Camas y Ropa","price":1070.0,"photo":"png","no_stock":false},{"code":"403","code_safe":"403","name":"Polar liso talle 2 (30cm)","category":"Camas y Ropa","price":1420.0,"photo":"png","no_stock":false},{"code":"404","code_safe":"404","name":"Polar liso talle 3 (35cm)","category":"Camas y Ropa","price":1845.0,"photo":"png","no_stock":false},{"code":"405","code_safe":"405","name":"Polar liso talle 4 (40cm)","category":"Camas y Ropa","price":2180.0,"photo":"png","no_stock":false},{"code":"406","code_safe":"406","name":"Polar liso talle 5 (45cm)","category":"Camas y Ropa","price":2390.0,"photo":"png","no_stock":false},{"code":"407","code_safe":"407","name":"Polar liso talle 6 (50cm)","category":"Camas y Ropa","price":2885.0,"photo":"png","no_stock":false},{"code":"408","code_safe":"408","name":"Polar liso talle 7 (55cm)","category":"Camas y Ropa","price":3290.0,"photo":"png","no_stock":false},{"code":"409","code_safe":"409","name":"Polar liso talle 8 (60cm)","category":"Camas y Ropa","price":3450.0,"photo":"png","no_stock":false},{"code":"410","code_safe":"410","name":"Polar liso talle 9 (65cm)","category":"Camas y Ropa","price":3780.0,"photo":"png","no_stock":false},{"code":"411","code_safe":"411","name":"Polar liso talle 10 (70cm)","category":"Camas y Ropa","price":4150.0,"photo":"png","no_stock":false},{"code":"412","code_safe":"412","name":"Polar liso talle 11 (75cm)","category":"Camas y Ropa","price":4599.0,"photo":"png","no_stock":false},{"code":"413","code_safe":"413","name":"Polar liso talle 12 (80cm)","category":"Camas y Ropa","price":4899.0,"photo":"png","no_stock":false},{"code":"41","code_safe":"41","name":"Polar Soft talle 1","category":"Camas y Ropa","price":2220.0,"photo":"png","no_stock":false},{"code":"42","code_safe":"42","name":"Polar Soft talle 2","category":"Camas y Ropa","price":2445.0,"photo":"png","no_stock":false},{"code":"43","code_safe":"43","name":"Polar Soft talle 3","category":"Camas y Ropa","price":2690.0,"photo":"png","no_stock":false},{"code":"44","code_safe":"44","name":"Polar Soft talle 4","category":"Camas y Ropa","price":3090.0,"photo":"png","no_stock":false},{"code":"45","code_safe":"45","name":"Polar Soft talle 5","category":"Camas y Ropa","price":3350.0,"photo":"png","no_stock":false},{"code":"46","code_safe":"46","name":"Polar Soft talle 6","category":"Camas y Ropa","price":3895.0,"photo":"png","no_stock":false},{"code":"47","code_safe":"47","name":"Polar Soft talle 7","category":"Camas y Ropa","price":4190.0,"photo":"png","no_stock":false},{"code":"48","code_safe":"48","name":"Polar Soft talle 8","category":"Camas y Ropa","price":4450.0,"photo":"png","no_stock":false},{"code":"49","code_safe":"49","name":"Polar Soft talle 9","category":"Camas y Ropa","price":4985.0,"photo":"png","no_stock":false},{"code":"50","code_safe":"50","name":"Polar Soft talle 10","category":"Camas y Ropa","price":5265.0,"photo":"png","no_stock":false},{"code":"51","code_safe":"51","name":"Polar Soft talle 11","category":"Camas y Ropa","price":5690.0,"photo":"png","no_stock":false},{"code":"52","code_safe":"52","name":"Polar Soft talle 12","category":"Camas y Ropa","price":6125.0,"photo":"png","no_stock":false},{"code":"PSA3","code_safe":"PSA3","name":"Polar Soft Argentina Talle 3","category":"Camas y Ropa","price":3440.0,"photo":"png","no_stock":false},{"code":"PSA4","code_safe":"PSA4","name":"Polar Soft Argentina Talle 4","category":"Camas y Ropa","price":3899.0,"photo":"png","no_stock":false},{"code":"PSA5","code_safe":"PSA5","name":"Polar Soft Argentina Talle 5","category":"Camas y Ropa","price":4475.0,"photo":"png","no_stock":false},{"code":"PSA6","code_safe":"PSA6","name":"Polar Soft Argentina Talle 6","category":"Camas y Ropa","price":5135.0,"photo":"png","no_stock":false},{"code":"PSA7","code_safe":"PSA7","name":"Polar Soft Argentina Talle 7","category":"Camas y Ropa","price":5750.0,"photo":"png","no_stock":false},{"code":"1291","code_safe":"1291","name":"Polar plush c/mangas importado 20cm","category":"Camas y Ropa","price":3990.0,"photo":"png","no_stock":false},{"code":"1292","code_safe":"1292","name":"Polar plush c/mangas importado 25cm","category":"Camas y Ropa","price":4485.0,"photo":"png","no_stock":false},{"code":"1293","code_safe":"1293","name":"Polar plush c/mangas importado 30cm","category":"Camas y Ropa","price":4915.0,"photo":"png","no_stock":false},{"code":"1294","code_safe":"1294","name":"Polar plush c/mangas importado 35cm","category":"Camas y Ropa","price":5390.0,"photo":"png","no_stock":false},{"code":"1050","code_safe":"1050","name":"Campera Impermeable Talle S","category":"Camas y Ropa","price":10990.0,"photo":"png","no_stock":false},{"code":"1051","code_safe":"1051","name":"Campera Impermeable Talle M","category":"Camas y Ropa","price":10990.0,"photo":"png","no_stock":false},{"code":"1052","code_safe":"1052","name":"Campera Impermeable Talle L","category":"Camas y Ropa","price":10990.0,"photo":"png","no_stock":false},{"code":"1053","code_safe":"1053","name":"Campera Impermeable Talle XL","category":"Camas y Ropa","price":14900.0,"photo":"png","no_stock":false},{"code":"1054","code_safe":"1054","name":"Campera Impermeable Talle XXL","category":"Camas y Ropa","price":14900.0,"photo":"png","no_stock":false},{"code":"BCMM","code_safe":"BCMM","name":"Buzo corderito c/mangas Talle M","category":"Camas y Ropa","price":7490.0,"photo":"png","no_stock":false},{"code":"BCML","code_safe":"BCML","name":"Buzo corderito c/mangas Talle L","category":"Camas y Ropa","price":7490.0,"photo":"png","no_stock":false},{"code":"BCMXL","code_safe":"BCMXL","name":"Buzo corderito c/mangas Talle XL","category":"Camas y Ropa","price":7490.0,"photo":"png","no_stock":false},{"code":"ECL","code_safe":"ECL","name":"Enterito de corderito c/4 mangas L","category":"Camas y Ropa","price":9990.0,"photo":"png","no_stock":false},{"code":"ECXL","code_safe":"ECXL","name":"Enterito de corderito c/4 mangas XL","category":"Camas y Ropa","price":9990.0,"photo":"png","no_stock":false},{"code":"EC2XL","code_safe":"EC2XL","name":"Enterito de corderito c/4 mangas XXL","category":"Camas y Ropa","price":9990.0,"photo":"png","no_stock":false},{"code":"BFL","code_safe":"BFL","name":"Buzo Friza con orejitas L","category":"Camas y Ropa","price":13790.0,"photo":"png","no_stock":false},{"code":"BFXL","code_safe":"BFXL","name":"Buzo Friza con orejitas XL","category":"Camas y Ropa","price":13790.0,"photo":"png","no_stock":false},{"code":"BF2XL","code_safe":"BF2XL","name":"Buzo Friza con orejitas XXL","category":"Camas y Ropa","price":13790.0,"photo":"png","no_stock":false},{"code":"HGB","code_safe":"HGB","name":"Hamstera c/bebedero y rueda","category":"Snacks y Varios","price":26490.0,"photo":"png","no_stock":false},{"code":"1257","code_safe":"1257","name":"Hierba gato lista p/usar","category":"Snacks y Varios","price":4290.0,"photo":"png","no_stock":false},{"code":"1224","code_safe":"1224","name":"Catnip Spray","category":"Snacks y Varios","price":3852.09,"photo":"png","no_stock":false},{"code":"1225","code_safe":"1225","name":"Catnip deshidratado","category":"Snacks y Varios","price":3288.12,"photo":"png","no_stock":false},{"code":"1226","code_safe":"1226","name":"Semillas Hierba Gatera","category":"Snacks y Varios","price":null,"photo":"png","no_stock":false},{"code":"1222","code_safe":"1222","name":"Catnip Ball","category":"Snacks y Varios","price":2590.0,"photo":"png","no_stock":false},{"code":"1230","code_safe":"1230","name":"Snack Cremoso Pescado","category":"Snacks y Varios","price":2190.0,"photo":"png","no_stock":false},{"code":"1231","code_safe":"1231","name":"Snack Cremoso Pollo","category":"Snacks y Varios","price":2190.0,"photo":"png","no_stock":false},{"code":"1231-1","code_safe":"1231-1","name":"Snack Cremoso Pollo p/perro","category":"Snacks y Varios","price":2190.0,"photo":"png","no_stock":false},{"code":"1258","code_safe":"1258","name":"Choricks Snack Carne y leche de cabra","category":"Snacks y Varios","price":1490.0,"photo":"png","no_stock":false},{"code":"1259","code_safe":"1259","name":"Dentalitas x500grs","category":"Snacks y Varios","price":3990.0,"photo":"png","no_stock":false},{"code":"1260","code_safe":"1260","name":"Baño de Arena Roedores","category":"Snacks y Varios","price":2996.62,"photo":"png","no_stock":false},{"code":"PROX","code_safe":"PROX","name":"Cookies Roedores","category":"Snacks y Varios","price":null,"photo":null,"no_stock":false},{"code":"1265","code_safe":"1265","name":"Rueditas de Sal mineral","category":"Snacks y Varios","price":3007.0,"photo":"png","no_stock":false},{"code":"1223","code_safe":"1223","name":"Talco Neutralizador de olores","category":"Snacks y Varios","price":null,"photo":"png","no_stock":false},{"code":"1295","code_safe":"1295","name":"Stick Hamster","category":"Snacks y Varios","price":3007.0,"photo":"png","no_stock":false},{"code":"1309","code_safe":"1309","name":"Pouch Natufresh Pollo","category":"Snacks y Varios","price":799.0,"photo":"png","no_stock":false},{"code":"1310","code_safe":"1310","name":"Pouch Natufresh Salmón","category":"Snacks y Varios","price":null,"photo":"png","no_stock":false},{"code":"1144","code_safe":"1144","name":"Chapita identificadora QR Chica","category":"Paseo y Transporte","price":8250.0,"photo":"jpeg","no_stock":false},{"code":"1145","code_safe":"1145","name":"Chapita identificadora QR Mediana","category":"Paseo y Transporte","price":8250.0,"photo":"jpeg","no_stock":false},{"code":"1146","code_safe":"1146","name":"Chapita identificadora QR Grande","category":"Paseo y Transporte","price":8250.0,"photo":"jpeg","no_stock":false},{"code":"PILETA","code_safe":"PILETA","name":"Pileta para Perros 80x30cm","category":"Juguetes y Rascadores","price":39990.0,"photo":"png","no_stock":false},{"code":"593","code_safe":"593","name":"Roll de cuero comestible","category":"Snacks y Varios","price":1090.0,"photo":"png","no_stock":false},{"code":"594","code_safe":"594","name":"Grisín de cuero comestible","category":"Snacks y Varios","price":599.0,"photo":"png","no_stock":false},{"code":"584","code_safe":"584","name":"Hueso de cuero comestible 3/4","category":"Snacks y Varios","price":699.0,"photo":"png","no_stock":false},{"code":"585","code_safe":"585","name":"Hueso de cuero comestible 4/5","category":"Snacks y Varios","price":925.0,"photo":"png","no_stock":false},{"code":"586","code_safe":"586","name":"Hueso de cuero comestible 5/6","category":"Snacks y Varios","price":1225.0,"photo":"png","no_stock":false},{"code":"587","code_safe":"587","name":"Hueso de cuero comestible 6/7","category":"Snacks y Varios","price":1807.0,"photo":"png","no_stock":false},{"code":"588","code_safe":"588","name":"Hueso de cuero comestible 7/8","category":"Snacks y Varios","price":2133.0,"photo":"png","no_stock":false},{"code":"589","code_safe":"589","name":"Hueso de cuero comestible 8/9","category":"Snacks y Varios","price":2715.0,"photo":"png","no_stock":false},{"code":"590","code_safe":"590","name":"Hueso de cuero comestible 9/10","category":"Snacks y Varios","price":3415.0,"photo":"png","no_stock":false},{"code":"591","code_safe":"591","name":"Hueso de cuero comestible 10/11","category":"Snacks y Varios","price":4071.0,"photo":"png","no_stock":false},{"code":"597","code_safe":"597","name":"Palitos Extrusados x200 Uni.","category":"Snacks y Varios","price":6890.0,"photo":"png","no_stock":false}];
+const STORAGE_KEY = "renatta_panel_mock_v1";
+
+function loadData(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || structuredClone(ORIGINAL); }
+  catch { return structuredClone(ORIGINAL); }
+}
+function saveData(d){ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+function resetDemo(){ localStorage.removeItem(STORAGE_KEY); state.data = structuredClone(ORIGINAL); render(); toast("Datos del demo reseteados", "success"); }
+
+const state = {
+  data: loadData(),
+  search: "",
+  category: "",
+  pendingDelete: null,
+  editingCode: null
+};
+
+const fmtAR = n => n != null ? new Intl.NumberFormat("es-AR", {style:"currency", currency:"ARS", maximumFractionDigits: n%1===0 ? 0 : 2}).format(n) : "Consultar";
+
+function escapeHTML(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+function filtered(){
+  return state.data.filter(p=>{
+    if (state.category && p.category !== state.category) return false;
+    if (state.search){
+      const q = state.search.toLowerCase();
+      if (!(p.name + " " + p.code + " " + p.category).toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function updateStats(){
+  const d = state.data;
+  document.getElementById("s-total").textContent = d.length;
+  document.getElementById("s-photo").textContent = d.filter(p=>p.photo).length;
+  document.getElementById("s-stock").textContent = d.filter(p=>!p.no_stock).length;
+  document.getElementById("s-nostock").textContent = d.filter(p=>p.no_stock).length;
+}
+
+function row(p){
+  const photo = p.photo
+    ? `<img src="fotos/${p.code_safe}.${p.photo}" alt="" onerror="this.parentNode.classList.add('no-photo');this.outerHTML='${PAWS.replace(/'/g,"\\'")}'">`
+    : PAWS;
+  const photoClass = p.photo ? "" : "no-photo";
+  const stockClass = p.no_stock ? "no-stock" : "available";
+  const stockLabel = p.no_stock ? "Sin stock" : "Disponible";
+  const catOptions = CATS.map(c=>`<option ${c===p.category?'selected':''}>${c}</option>`).join("");
+  return `
+    <div class="product-row ${p.no_stock?'no-stock-row':''}" data-code="${escapeHTML(p.code)}">
+      <div class="thumb ${photoClass}" onclick="changePhoto('${escapeHTML(p.code)}')">
+        ${photo}
+        <span class="hover-edit">📷 Cambiar</span>
+      </div>
+      <div class="cell-name" ondblclick="editName(this, '${escapeHTML(p.code)}')" onclick="editName(this, '${escapeHTML(p.code)}')">${escapeHTML(p.name)}</div>
+      <div class="cell-code"><span class="cell-code">${escapeHTML(p.code)}</span></div>
+      <div class="cell-cat"><select onchange="changeCategory('${escapeHTML(p.code)}', this.value)">${catOptions}</select></div>
+      <div class="cell-price-wrap"><span class="cell-price ${p.price==null?'consult':''}" onclick="editPrice(this, '${escapeHTML(p.code)}')">${p.price!=null ? fmtAR(p.price) : 'Consultar'}</span></div>
+      <div class="cell-stock"><span class="stock-toggle ${stockClass}" onclick="toggleStock('${escapeHTML(p.code)}')"><span class="stock-dot"></span>${stockLabel}</span></div>
+      <div class="row-actions">
+        <button class="icon-btn" title="Cambiar foto" onclick="changePhoto('${escapeHTML(p.code)}')">📷</button>
+        <button class="icon-btn danger" title="Eliminar" onclick="askDelete('${escapeHTML(p.code)}')">🗑</button>
+      </div>
+    </div>`;
+}
+
+
+const PAGE_SIZE = 25;
+state.page = 1;
+
+function exportCSV(){
+  const list = filtered();
+  const rows = [["Codigo","Nombre","Categoria","Precio","Stock"]];
+  list.forEach(p=>{
+    rows.push([p.code, p.name, p.category, p.price ?? "Consultar", p.no_stock ? "Sin stock" : "Disponible"]);
+  });
+  const csv = rows.map(r=>r.map(c=>{
+    const s = String(c ?? "");
+    return /[,";\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  }).join(",")).join("\n");
+  const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const fecha = new Date().toISOString().slice(0,10);
+  a.href = url; a.download = `renatta-catalogo-${fecha}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast(`📥 CSV descargado (${list.length} productos)`, "success");
+}
+
+function renderPagination(total){
+  const pag = document.getElementById("pagination");
+  const pages = Math.ceil(total / PAGE_SIZE);
+  if (pages <= 1){ pag.innerHTML = ""; return; }
+  const p = state.page;
+  let html = `<button onclick="goPage(${p-1})" ${p===1?'disabled':''}>‹</button>`;
+  // Smart page numbers
+  const nums = new Set([1, 2, pages-1, pages, p-1, p, p+1]);
+  let prev = 0;
+  [...nums].filter(n=>n>=1 && n<=pages).sort((a,b)=>a-b).forEach(n=>{
+    if (n - prev > 1) html += `<span class="info">…</span>`;
+    html += `<button class="${n===p?'active':''}" onclick="goPage(${n})">${n}</button>`;
+    prev = n;
+  });
+  html += `<button onclick="goPage(${p+1})" ${p===pages?'disabled':''}>›</button>`;
+  html += `<span class="info">${total} productos</span>`;
+  pag.innerHTML = html;
+}
+
+function goPage(n){ state.page = n; render(); window.scrollTo({top:200, behavior:'smooth'}); }
+
+
+function render(){
+  updateStats();
+  const list = filtered();
+  const rows = document.getElementById("rows");
+  if (!list.length){
+    rows.innerHTML = `<div class="empty-state"><h3>No hay productos</h3><p>Cambiá el filtro o agregá uno nuevo.</p></div>`;
+    return;
+  }
+  const start = (state.page - 1) * PAGE_SIZE;
+  const pageItems = list.slice(start, start + PAGE_SIZE);
+  rows.innerHTML = pageItems.map(row).join("");
+  renderPagination(list.length);
+}
+
+// === Inline edits ===
+function editName(el, code){
+  if (el.classList.contains('editing')) return;
+  el.classList.add('editing');
+  const old = el.textContent;
+  el.innerHTML = `<input type="text" value="${escapeHTML(old)}">`;
+  const inp = el.querySelector('input');
+  inp.focus(); inp.select();
+  function save(){
+    const v = inp.value.trim();
+    if (v && v !== old){
+      const p = state.data.find(x=>x.code===code);
+      if (p){ p.name = v; saveData(state.data); toast(`✅ "${v}" actualizado`, "success"); }
+    }
+    el.classList.remove('editing');
+    el.textContent = v || old;
+  }
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', e=>{
+    if (e.key === 'Enter') inp.blur();
+    if (e.key === 'Escape'){ el.classList.remove('editing'); el.textContent = old; }
+  });
+}
+
+function editPrice(el, code){
+  if (el.querySelector('input')) return;
+  const p = state.data.find(x=>x.code===code);
+  const oldText = el.textContent;
+  el.innerHTML = `<input type="text" value="${p.price ?? ''}" inputmode="decimal" placeholder="Vacío = Consultar">`;
+  const inp = el.querySelector('input');
+  inp.focus(); inp.select();
+  function save(){
+    const raw = inp.value.trim().replace(/\./g,'').replace(',','.');
+    const v = raw === '' ? null : parseFloat(raw);
+    if (raw === '' || !isNaN(v)){
+      p.price = v;
+      saveData(state.data);
+      toast(`💰 Precio actualizado: ${p.name}`, "success");
+    }
+    render();
+  }
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', e=>{
+    if (e.key === 'Enter') inp.blur();
+    if (e.key === 'Escape'){ el.textContent = oldText; }
+  });
+}
+
+function changeCategory(code, val){
+  const p = state.data.find(x=>x.code===code);
+  if (p && p.category !== val){
+    p.category = val;
+    saveData(state.data);
+    toast(`📂 ${p.name} → ${val}`, "success");
+  }
+}
+
+function toggleStock(code){
+  const p = state.data.find(x=>x.code===code);
+  if (p){
+    p.no_stock = !p.no_stock;
+    saveData(state.data);
+    toast(p.no_stock ? `❌ ${p.name} marcado sin stock` : `✅ ${p.name} disponible`, "success");
+    render();
+  }
+}
+
+function changePhoto(code){
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/*';
+  inp.onchange = (e)=>{
+    const f = e.target.files[0];
+    if (!f) return;
+    const p = state.data.find(x=>x.code===code);
+    // In the real backend: upload to Blobs. Here just simulate.
+    toast(`📷 Subiendo "${f.name}"… (mock)`, "success");
+    setTimeout(()=>{
+      // For demo: set photo data URL
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        p._localPhotoData = reader.result;  // demo only
+        p.photo = f.name.split('.').pop() || 'png';
+        saveData(state.data);
+        render();
+        toast(`✅ Foto cambiada en ${p.name}`, "success");
+      };
+      reader.readAsDataURL(f);
+    }, 600);
+  };
+  inp.click();
+}
+
+// === Modals ===
+function openAddModal(){
+  document.getElementById('modal-title').textContent = '＋ Nuevo producto';
+  ['f-name','f-code','f-price'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-cat').value = CATS[0];
+  document.getElementById('f-stock').value = 'false';
+  document.getElementById('upload-default').style.display = '';
+  document.getElementById('upload-preview').style.display = 'none';
+  document.getElementById('add-modal').classList.add('open');
+}
+function closeAddModal(){ document.getElementById('add-modal').classList.remove('open'); }
+
+function previewPhoto(input){
+  const f = input.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    document.getElementById('upload-default').style.display = 'none';
+    const img = document.getElementById('upload-preview');
+    img.src = reader.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(f);
+}
+
+function saveProduct(){
+  const name = document.getElementById('f-name').value.trim();
+  const code = document.getElementById('f-code').value.trim();
+  if (!name || !code){ toast("⚠️ Nombre y código son obligatorios", "error"); return; }
+  if (state.data.some(p=>p.code===code)){ toast(`⚠️ El código "${code}" ya existe`, "error"); return; }
+  const priceRaw = document.getElementById('f-price').value.trim().replace(/\./g,'').replace(',','.');
+  const price = priceRaw === '' ? null : parseFloat(priceRaw);
+  const cat = document.getElementById('f-cat').value;
+  const no_stock = document.getElementById('f-stock').value === 'true';
+  const code_safe = code.replace(/[\/<>:"|?*]/g, '_');
+  const fileInp = document.getElementById('f-photo');
+  const f = fileInp.files[0];
+  const photoExt = f ? (f.name.split('.').pop() || 'png') : null;
+  state.data.unshift({code, code_safe, name, category: cat, price, photo: photoExt, no_stock});
+  saveData(state.data);
+  closeAddModal();
+  render();
+  toast(`✅ Producto agregado: ${name}`, "success");
+}
+
+function askDelete(code){
+  state.pendingDelete = code;
+  const p = state.data.find(x=>x.code===code);
+  document.getElementById('del-name').textContent = p ? p.name : code;
+  document.getElementById('delete-modal').classList.add('open');
+}
+function closeDeleteModal(){ document.getElementById('delete-modal').classList.remove('open'); state.pendingDelete = null; }
+function confirmDelete(){
+  if (!state.pendingDelete) return;
+  const p = state.data.find(x=>x.code===state.pendingDelete);
+  state.data = state.data.filter(x=>x.code!==state.pendingDelete);
+  saveData(state.data);
+  closeDeleteModal();
+  render();
+  toast(`🗑 ${p?.name || 'Producto'} eliminado`, "success");
+}
+
+// === Toast ===
+let toastTimer;
+function toast(msg, type="success"){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.className = 'toast'; }, 2400);
+}
+
+// === Wire search & filter ===
+let searchTimer;
+document.getElementById('search').addEventListener('input', e=>{
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(()=>{ state.search = e.target.value; state.page = 1; render(); }, 120);
+});
+document.getElementById('filter-cat').addEventListener('change', e=>{ state.category = e.target.value; state.page = 1; render(); });
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click', e=>{
+    if (e.target === o) o.classList.remove('open');
+  });
+});
+document.addEventListener('keydown', e=>{
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+});
+
+render();
+</script>
+</body>
+</html>

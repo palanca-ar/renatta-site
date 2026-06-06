@@ -1,0 +1,65 @@
+================================================
+COMO PUBLICAR EL SITIO EN NETLIFY (drag-and-drop)
+================================================
+
+Es lo más fácil del mundo. No hace falta cuenta de programador, ni
+instalar nada, ni saber HTML.
+
+1. Tener este zip a mano (renatta-site.zip)
+
+2. Abrir en el navegador:
+   https://app.netlify.com/drop
+
+3. Si es la primera vez, te va a pedir crear cuenta (con Google o email).
+   La cuenta gratuita alcanza.
+
+4. Arrastrar este ZIP entero a la zona que dice "Drag your project here".
+
+5. En 30 segundos te devuelve una URL pública del estilo:
+   https://renatta-premium-pet-XXXXX.netlify.app
+
+6. Esa URL ya es el sitio funcional - se la podés mandar a tus clientes,
+   ponerla en el bio de Instagram, etc.
+
+================================================
+PARA ACTUALIZAR PRECIOS / PRODUCTOS / FOTOS
+================================================
+
+Cuando cambien cosas:
+1. Pedir que regeneren el index.html con el Excel nuevo
+2. Reemplazar el archivo en la carpeta
+3. Volver a zippear y arrastrar a Netlify (entra al sitio existente
+   y va a Deploys -> hacer drag-and-drop ahí, o "New deploy")
+
+Las URLs no cambian, solo se actualiza el contenido.
+
+================================================
+PARA AGREGAR UNA FOTO NUEVA
+================================================
+
+1. Renombrar la foto exactamente como el código de artículo del Excel
+   Ejemplo: "PPAL.jpg" para Peluche Palta (código PPAL)
+   Ejemplo: "1144.jpg" para Chapita QR Chica (código 1144)
+
+2. Recomendaciones:
+   - Cuadrada, ~800-1000px de lado
+   - Fondo blanco o de madera, luz pareja
+   - JPG calidad 75-80%, ~150KB por foto
+   - SIN espacios y SIN acentos en el nombre
+
+3. Pegarla en la carpeta /fotos/
+
+4. Re-zipear todo y volver a subir a Netlify
+
+================================================
+PARA UN DOMINIO PROPIO
+================================================
+
+Una vez funcionando con la URL .netlify.app, se puede conectar
+un dominio del estilo renattapremiumpet.com.ar desde:
+
+   Netlify -> el sitio -> Domain settings -> Add custom domain
+
+(Hay que comprar el dominio primero, en NIC.ar para los .com.ar
+o en Namecheap/GoDaddy para .com)
+
