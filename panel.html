@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Admin — Renatta Premium Pet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #D62828;
+  --red-dark: #A31E1E;
+  --yellow: #F4B731;
+  --yellow-soft: #FCE9B6;
+  --black: #1A1A1A;
+  --white: #FFFFFF;
+  --gray-soft: #F4F4F4;
+  --gray-bg: #FAFAFA;
+  --gray-line: #E2E2E2;
+  --gray: #6B6B6B;
+  --gray-dark: #444;
+  --green: #1FAD55;
+  --orange: #F39C12;
+  --shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--gray-bg);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--black);
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; cursor: pointer; border: none; }
+input, select { font-family: inherit; }
+img { display: block; max-width: 100%; }
+
+/* === DEMO BANNER === */
+.demo-banner {
+  background: repeating-linear-gradient(45deg, #1A1A1A, #1A1A1A 12px, #2a2a2a 12px, #2a2a2a 24px);
+  color: var(--yellow);
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+.demo-banner b { color: var(--white); }
+
+/* === HEADER === */
+header.brand-header {
+  background: var(--red);
+  color: var(--white);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow);
+}
+.brand-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand-logo-mini {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--white);
+  padding: 3px;
+}
+.brand-text h1 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  margin: 0;
+}
+.brand-text p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.9;
+}
+.brand-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.user-chip {
+  background: rgba(255,255,255,0.16);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.btn-logout {
+  background: rgba(0,0,0,0.18);
+  color: var(--white);
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.btn-logout:hover { background: rgba(0,0,0,0.3); }
+
+/* === TABS === */
+.tabs {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-line);
+  padding: 0 24px;
+  display: flex;
+  gap: 4px;
+}
+.tab {
+  background: transparent;
+  padding: 14px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray);
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  position: relative;
+}
+.tab:hover { color: var(--black); }
+.tab.active {
+  color: var(--red);
+  border-bottom-color: var(--red);
+}
+.tab .pill {
+  position: absolute;
+  top: 8px;
+  right: 4px;
+  background: var(--yellow);
+  color: var(--black);
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+/* === MAIN === */
+main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* === ACTION BAR === */
+.action-bar {
+  background: var(--white);
+  border: 1px solid var(--gray-line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.action-bar .search {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+.action-bar .search input {
+  width: 100%;
+  padding: 9px 14px 9px 38px;
+  border: 1px solid var(--gray-line);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.action-bar .search input:focus { border-color: var(--red); }
+.action-bar .search::before {
+  content: "🔍";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  pointer-events: none;
+}
+.filter-select {
+  padding: 9px 14px;
+  border: 1px solid var(--gray-line);
+  border-radius: 8px;
+  font-size: 14px;
+  background: var(--white);
+  cursor: pointer;
+  outline: none;
+  min-width: 180px;
+}
+.btn-primary {
+  background: var(--red);
+  color: var(--white);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-primary:hover { background: var(--red-dark); }
+.btn-ghost {
+  background: transparent;
+  color: var(--gray-dark);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.btn-ghost:hover { background: var(--gray-soft); }
+
+/* === STATS LINE === */
+.stats-line {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 14px;
+  padding: 0 4px;
+  font-size: 13px;
+  color: var(--gray);
+}
+.stats-line b { color: var(--black); font-weight: 600; }
+
+/* === TABLE === */
+.products-table {
+  background: var(--white);
+  border: 1px solid var(--gray-line);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.table-head {
+  display: grid;
+  grid-template-columns: 70px 2.2fr 110px 1.5fr 120px 130px 110px;
+  padding: 12px 16px;
+  background: var(--gray-soft);
+  border-bottom: 1px solid var(--gray-line);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  align-items: center;
+}
+.product-row {
+  display: grid;
+  grid-template-columns: 70px 2.2fr 110px 1.5fr 120px 130px 110px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gray-line);
+  align-items: center;
+  gap: 8px;
+  transition: background 0.1s;
+}
+.product-row:last-child { border-bottom: none; }
+.product-row:hover { background: #fffbf4; }
+.product-row.no-stock-row { opacity: 0.65; }
+
+.thumb {
+  width: 54px;
+  height: 54px;
+  background: var(--gray-soft);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  border: 1px solid var(--gray-line);
+}
+.thumb img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+.thumb.no-photo { background: var(--yellow-soft); }
+.thumb.no-photo svg { width: 70%; height: 70%; }
+.thumb .hover-edit {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.thumb:hover .hover-edit { opacity: 1; }
+
+.cell-name { font-weight: 500; font-size: 14px; line-height: 1.3; cursor: text; padding: 2px 4px; border-radius: 4px; transition: background 0.1s; }
+.cell-name:hover { background: var(--gray-soft); }
+.cell-name.editing { background: var(--white); }
+.cell-name input {
+  border: 1px solid var(--red);
+  padding: 4px 8px;
+  width: 100%;
+  font-size: 14px;
+  outline: none;
+  border-radius: 4px;
+}
+
+.cell-code {
+  font-family: 'SFMono-Regular', Menlo, monospace;
+  font-size: 12px;
+  background: var(--gray-soft);
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--gray-dark);
+  display: inline-block;
+  font-weight: 500;
+}
+
+.cell-cat select {
+  width: 100%;
+  padding: 5px 8px;
+  font-size: 13px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.cell-cat select:hover { border-color: var(--gray-line); background: var(--white); }
+.cell-cat select:focus { border-color: var(--red); background: var(--white); outline: none; }
+
+.cell-price {
+  font-weight: 700;
+  color: var(--red);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  cursor: text;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.cell-price.consult { color: var(--gray); font-size: 13px; }
+.cell-price:hover { background: var(--gray-soft); }
+.cell-price input {
+  border: 1px solid var(--red);
+  padding: 4px 8px;
+  width: 100%;
+  font-size: 14px;
+  outline: none;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.stock-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.stock-toggle.available {
+  background: #E8F8EE;
+  color: #1FAD55;
+}
+.stock-toggle.no-stock {
+  background: #FDE8E8;
+  color: var(--red);
+}
+.stock-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+.row-actions { display: flex; gap: 4px; justify-content: flex-end; }
+.icon-btn {
+  background: transparent;
+  border-radius: 6px;
+  padding: 7px;
+  color: var(--gray-dark);
+  transition: background 0.15s, color 0.15s;
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn:hover { background: var(--gray-soft); }
+.icon-btn.danger:hover { background: #FDE8E8; color: var(--red); }
+
+/* === EMPTY === */
+.empty-state {
+  background: var(--white);
+  border: 1px dashed var(--gray-line);
+  border-radius: 12px;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--gray);
+}
+.empty-state h3 { font-family: 'Fredoka', sans-serif; color: var(--black); margin: 0 0 6px; }
+
+/* === MODAL === */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.modal-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--gray-line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h2 {
+  font-family: 'Fredoka', sans-serif;
+  margin: 0;
+  font-size: 19px;
+}
+.modal-close {
+  background: transparent;
+  color: var(--gray);
+  font-size: 24px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-close:hover { background: var(--gray-soft); }
+.modal-body { padding: 22px; }
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--gray-dark);
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--gray-line);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--red); }
+.field .hint { font-size: 11px; color: var(--gray); margin-top: 4px; }
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.upload-zone {
+  border: 2px dashed var(--gray-line);
+  border-radius: 10px;
+  padding: 22px;
+  text-align: center;
+  background: var(--gray-soft);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.upload-zone:hover { border-color: var(--red); background: #fff8f6; }
+.upload-zone .ico { font-size: 28px; opacity: 0.6; margin-bottom: 6px; }
+.upload-zone .lbl { font-size: 13px; font-weight: 600; color: var(--gray-dark); }
+.upload-zone .hint { font-size: 11px; color: var(--gray); margin-top: 4px; }
+.upload-zone img.preview { max-height: 100px; margin: 0 auto; }
+
+.modal-footer {
+  padding: 16px 22px;
+  border-top: 1px solid var(--gray-line);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.confirm-msg {
+  text-align: center;
+  padding: 8px 0 22px;
+  font-size: 15px;
+  color: var(--gray-dark);
+}
+.confirm-msg b { color: var(--black); }
+.confirm-msg .warn {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--red);
+  background: #FDE8E8;
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+/* === TOAST === */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(40px);
+  background: var(--black);
+  color: var(--white);
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  transition: all 0.25s ease;
+  pointer-events: none;
+  z-index: 200;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+
+
+.pagination { display: flex; justify-content: center; gap: 6px; margin-top: 16px; padding: 8px; }
+.pagination button { padding: 6px 12px; border: 1px solid var(--gray-line); border-radius: 6px; background: var(--white); font-size: 13px; font-weight: 500; color: var(--gray-dark); transition: all 0.15s; min-width: 36px; }
+.pagination button:hover:not(:disabled) { background: var(--gray-soft); }
+.pagination button.active { background: var(--red); color: var(--white); border-color: var(--red); }
+.pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+.pagination .info { padding: 6px 12px; color: var(--gray); font-size: 13px; }
+
+@media (max-width: 900px) {
+  .table-head, .product-row {
+    grid-template-columns: 60px 1fr;
+    gap: 12px;
+  }
+  .table-head .h-cat, .table-head .h-code, .table-head .h-cat,
+  .product-row .cell-code, .product-row .cell-cat, .product-row .cell-price-wrap, .product-row .cell-stock {
+    grid-column: 2;
+  }
+  .product-row { padding: 14px; }
+  main { padding: 14px; }
+}
+</style>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+
+
+<div id="login-screen" style="display:none;position:fixed;inset:0;background:var(--gray-bg);z-index:1000;align-items:center;justify-content:center;flex-direction:column">
+  <img src="logo.png" style="width:140px;margin-bottom:20px" onerror="this.style.display='none'">
+  <h1 style="font-family:'Fredoka',sans-serif;margin:0 0 8px;font-size:24px">Panel Admin Renatta</h1>
+  <p style="margin:0 0 24px;color:var(--gray)">Iniciá sesión para administrar el catálogo</p>
+  <button id="btn-login" style="background:var(--red);color:#fff;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;cursor:pointer;border:none">Iniciar sesión</button>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="paws" viewBox="0 0 100 100">
+    <g fill="#F4B731" stroke="#A31E1E" stroke-width="1.2">
+      <ellipse cx="32" cy="68" rx="13" ry="16"/>
+      <circle cx="20" cy="50" r="5.5"/>
+      <circle cx="32" cy="44" r="5.5"/>
+      <circle cx="44" cy="50" r="5.5"/>
+      <circle cx="50" cy="62" r="4.5"/>
+    </g>
+    <g fill="#F4B731" stroke="#A31E1E" stroke-width="1.2">
+      <ellipse cx="70" cy="40" rx="13" ry="16"/>
+      <circle cx="58" cy="22" r="5.5"/>
+      <circle cx="70" cy="16" r="5.5"/>
+      <circle cx="82" cy="22" r="5.5"/>
+      <circle cx="88" cy="34" r="4.5"/>
+    </g>
+  </symbol>
+</svg>
+
+
+
+<header class="brand-header">
+  <div class="brand-left">
+    <img src="logo.png" class="brand-logo-mini" alt="Renatta" onerror="this.style.display='none'">
+    <div class="brand-text">
+      <h1>Panel Admin · Renatta</h1>
+      <p>Gestión del catálogo</p>
+    </div>
+  </div>
+  <div class="brand-right">
+    <span class="user-chip">👤 Renatta</span>
+    <button class="btn-logout">Cerrar sesión</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active">📦 Productos</button>
+  <button class="tab" onclick="location.href=&apos;dashboard-mockup.html&apos;">📊 Dashboard</button>
+</nav>
+
+<main>
+  <div class="action-bar">
+    <div class="search"><input id="search" type="text" placeholder="Buscar por nombre o código…"></div>
+    <select id="filter-cat" class="filter-select">
+      <option value="">Todas las categorías</option>
+      <option>Juguetes y Rascadores</option>
+      <option>Camas y Ropa</option>
+      <option>Higiene y Peluquería</option>
+      <option>Paseo y Transporte</option>
+      <option>Plásticos y Comederos</option>
+      <option>Snacks y Varios</option>
+    </select>
+    <button class="btn-ghost" onclick="exportCSV()" title="Descargar CSV">📥 Exportar CSV</button>
+    <button class="btn-primary" onclick="openAddModal()">＋ Agregar producto</button>
+  </div>
+
+  <div class="stats-line" id="stats">
+    <span>📦 <b id="s-total">0</b> productos</span>
+    <span>📷 <b id="s-photo">0</b> con foto</span>
+    <span>✅ <b id="s-stock">0</b> disponibles</span>
+    <span>❌ <b id="s-nostock">0</b> sin stock</span>
+  </div>
+
+  <div class="products-table">
+    <div class="table-head">
+      <div></div>
+      <div>Nombre</div>
+      <div class="h-code">Código</div>
+      <div class="h-cat">Categoría</div>
+      <div>Precio</div>
+      <div>Stock</div>
+      <div style="text-align:right">Acciones</div>
+    </div>
+    <div id="rows"></div>
+  </div>
+  <div class="pagination" id="pagination"></div>
+  <div style="display:none">
+  </div>
+
+  </div>
+  <p style="margin:20px 4px 0;font-size:12px;color:var(--gray)">
+    💡 Tip: tocá el <b>nombre</b> o el <b>precio</b> para editarlos en línea. La categoría y el stock se cambian con un click. Los cambios se guardan automáticamente.
+  </p>
+</main>
+
+<!-- Modal: Agregar/Editar -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">＋ Nuevo producto</h2>
+      <button class="modal-close" onclick="closeAddModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Nombre del producto</label>
+        <input id="f-name" type="text" placeholder="Ej: Peluche Conejo Mediano">
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Código de artículo</label>
+          <input id="f-code" type="text" placeholder="Ej: PCM">
+          <div class="hint">Único. Letras y/o números, sin espacios.</div>
+        </div>
+        <div class="field">
+          <label>Categoría</label>
+          <select id="f-cat">
+            <option>Juguetes y Rascadores</option>
+            <option>Camas y Ropa</option>
+            <option>Higiene y Peluquería</option>
+            <option>Paseo y Transporte</option>
+            <option>Plásticos y Comederos</option>
+            <option>Snacks y Varios</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Precio</label>
+          <input id="f-price" type="text" placeholder="Ej: 5990 (sin $)" inputmode="decimal">
+          <div class="hint">Vacío = "Consultar precio"</div>
+        </div>
+        <div class="field">
+          <label>Stock</label>
+          <select id="f-stock">
+            <option value="false">✅ Disponible</option>
+            <option value="true">❌ Sin stock</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Foto del producto</label>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('f-photo').click()">
+          <input id="f-photo" type="file" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+          <div id="upload-default">
+            <div class="ico">📷</div>
+            <div class="lbl">Tocá para subir una foto</div>
+            <div class="hint">JPG o PNG, idealmente cuadrada · Sin foto = patitas</div>
+          </div>
+          <img id="upload-preview" class="preview" style="display:none">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeAddModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveProduct()">Guardar producto</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar eliminación -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <h2>🗑 Eliminar producto</h2>
+      <button class="modal-close" onclick="closeDeleteModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-msg">
+        ¿Eliminar <b id="del-name">—</b> del catálogo?<br>
+        <span class="warn">Esta acción no se puede deshacer.</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeDeleteModal()">Cancelar</button>
+      <button class="btn-primary" style="background:var(--red)" onclick="confirmDelete()">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PAWS = '<svg viewBox="0 0 100 100"><use href="#paws"/></svg>';
+const CATS = ["Juguetes y Rascadores", "Camas y Ropa", "Higiene y Peluquer\u00eda", "Paseo y Transporte", "Pl\u00e1sticos y Comederos", "Snacks y Varios"];
+const STORAGE_KEY = "renatta_panel_mock_v1";
+
+async function loadData(){
+  try {
+    const r = await fetch("/api/get-products");
+    if (!r.ok) throw new Error("Failed to load products");
+    return await r.json();
+  } catch(e) {
+    console.error("Error loading products:", e);
+    toast("⚠️ Error cargando productos del servidor", "error");
+    return [];
+  }
+}
+async function saveData(){ /* no-op: cada cambio se persiste individualmente via API */ }
+async function callApi(action, payload){
+  const user = window.netlifyIdentity?.currentUser();
+  if (!user) { toast("⚠️ Sesión expirada — refrescá la página", "error"); return null; }
+  const token = await user.jwt();
+  const r = await fetch("/api/save-product", {
+    method: "POST",
+    headers: { "content-type":"application/json", "authorization": `Bearer ${token}` },
+    body: JSON.stringify({ action, ...payload })
+  });
+  if (!r.ok) { const e = await r.json().catch(()=>({error:"unknown"})); toast(`⚠️ ${e.error}`, "error"); return null; }
+  return await r.json();
+}
+function resetDemo(){ localStorage.removeItem(STORAGE_KEY); state.data = structuredClone(ORIGINAL); render(); toast("Datos del demo reseteados", "success"); }
+
+const state = {
+  data: [],
+  search: "",
+  category: "",
+  pendingDelete: null,
+  editingCode: null
+};
+
+const fmtAR = n => n != null ? new Intl.NumberFormat("es-AR", {style:"currency", currency:"ARS", maximumFractionDigits: n%1===0 ? 0 : 2}).format(n) : "Consultar";
+
+function escapeHTML(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+function filtered(){
+  return state.data.filter(p=>{
+    if (state.category && p.category !== state.category) return false;
+    if (state.search){
+      const q = state.search.toLowerCase();
+      if (!(p.name + " " + p.code + " " + p.category).toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function updateStats(){
+  const d = state.data;
+  document.getElementById("s-total").textContent = d.length;
+  document.getElementById("s-photo").textContent = d.filter(p=>p.photo).length;
+  document.getElementById("s-stock").textContent = d.filter(p=>!p.no_stock).length;
+  document.getElementById("s-nostock").textContent = d.filter(p=>p.no_stock).length;
+}
+
+function row(p){
+  const photo = p.photo
+    ? `<img src="fotos/${p.code_safe}.${p.photo}" alt="" onerror="this.parentNode.classList.add('no-photo');this.outerHTML='${PAWS.replace(/'/g,"\\'")}'">`
+    : PAWS;
+  const photoClass = p.photo ? "" : "no-photo";
+  const stockClass = p.no_stock ? "no-stock" : "available";
+  const stockLabel = p.no_stock ? "Sin stock" : "Disponible";
+  const catOptions = CATS.map(c=>`<option ${c===p.category?'selected':''}>${c}</option>`).join("");
+  return `
+    <div class="product-row ${p.no_stock?'no-stock-row':''}" data-code="${escapeHTML(p.code)}">
+      <div class="thumb ${photoClass}" onclick="changePhoto('${escapeHTML(p.code)}')">
+        ${photo}
+        <span class="hover-edit">📷 Cambiar</span>
+      </div>
+      <div class="cell-name" ondblclick="editName(this, '${escapeHTML(p.code)}')" onclick="editName(this, '${escapeHTML(p.code)}')">${escapeHTML(p.name)}</div>
+      <div class="cell-code"><span class="cell-code">${escapeHTML(p.code)}</span></div>
+      <div class="cell-cat"><select onchange="changeCategory('${escapeHTML(p.code)}', this.value)">${catOptions}</select></div>
+      <div class="cell-price-wrap"><span class="cell-price ${p.price==null?'consult':''}" onclick="editPrice(this, '${escapeHTML(p.code)}')">${p.price!=null ? fmtAR(p.price) : 'Consultar'}</span></div>
+      <div class="cell-stock"><span class="stock-toggle ${stockClass}" onclick="toggleStock('${escapeHTML(p.code)}')"><span class="stock-dot"></span>${stockLabel}</span></div>
+      <div class="row-actions">
+        <button class="icon-btn" title="Cambiar foto" onclick="changePhoto('${escapeHTML(p.code)}')">📷</button>
+        <button class="icon-btn danger" title="Eliminar" onclick="askDelete('${escapeHTML(p.code)}')">🗑</button>
+      </div>
+    </div>`;
+}
+
+
+const PAGE_SIZE = 25;
+state.page = 1;
+
+function exportCSV(){
+  const list = filtered();
+  const rows = [["Codigo","Nombre","Categoria","Precio","Stock"]];
+  list.forEach(p=>{
+    rows.push([p.code, p.name, p.category, p.price ?? "Consultar", p.no_stock ? "Sin stock" : "Disponible"]);
+  });
+  const csv = rows.map(r=>r.map(c=>{
+    const s = String(c ?? "");
+    return /[,";\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  }).join(",")).join("\n");
+  const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const fecha = new Date().toISOString().slice(0,10);
+  a.href = url; a.download = `renatta-catalogo-${fecha}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast(`📥 CSV descargado (${list.length} productos)`, "success");
+}
+
+function renderPagination(total){
+  const pag = document.getElementById("pagination");
+  const pages = Math.ceil(total / PAGE_SIZE);
+  if (pages <= 1){ pag.innerHTML = ""; return; }
+  const p = state.page;
+  let html = `<button onclick="goPage(${p-1})" ${p===1?'disabled':''}>‹</button>`;
+  // Smart page numbers
+  const nums = new Set([1, 2, pages-1, pages, p-1, p, p+1]);
+  let prev = 0;
+  [...nums].filter(n=>n>=1 && n<=pages).sort((a,b)=>a-b).forEach(n=>{
+    if (n - prev > 1) html += `<span class="info">…</span>`;
+    html += `<button class="${n===p?'active':''}" onclick="goPage(${n})">${n}</button>`;
+    prev = n;
+  });
+  html += `<button onclick="goPage(${p+1})" ${p===pages?'disabled':''}>›</button>`;
+  html += `<span class="info">${total} productos</span>`;
+  pag.innerHTML = html;
+}
+
+function goPage(n){ state.page = n; render(); window.scrollTo({top:200, behavior:'smooth'}); }
+
+
+function render(){
+  updateStats();
+  const list = filtered();
+  const rows = document.getElementById("rows");
+  if (!list.length){
+    rows.innerHTML = `<div class="empty-state"><h3>No hay productos</h3><p>Cambiá el filtro o agregá uno nuevo.</p></div>`;
+    return;
+  }
+  const start = (state.page - 1) * PAGE_SIZE;
+  const pageItems = list.slice(start, start + PAGE_SIZE);
+  rows.innerHTML = pageItems.map(row).join("");
+  renderPagination(list.length);
+}
+
+// === Inline edits ===
+function editName(el, code){
+  if (el.classList.contains('editing')) return;
+  el.classList.add('editing');
+  const old = el.textContent;
+  el.innerHTML = `<input type="text" value="${escapeHTML(old)}">`;
+  const inp = el.querySelector('input');
+  inp.focus(); inp.select();
+  function save(){
+    const v = inp.value.trim();
+    if (v && v !== old){
+      const p = state.data.find(x=>x.code===code);
+      if (p){ p.name = v; saveData(state.data); toast(`✅ "${v}" actualizado`, "success"); }
+    }
+    el.classList.remove('editing');
+    el.textContent = v || old;
+  }
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', e=>{
+    if (e.key === 'Enter') inp.blur();
+    if (e.key === 'Escape'){ el.classList.remove('editing'); el.textContent = old; }
+  });
+}
+
+function editPrice(el, code){
+  if (el.querySelector('input')) return;
+  const p = state.data.find(x=>x.code===code);
+  const oldText = el.textContent;
+  el.innerHTML = `<input type="text" value="${p.price ?? ''}" inputmode="decimal" placeholder="Vacío = Consultar">`;
+  const inp = el.querySelector('input');
+  inp.focus(); inp.select();
+  async function save(){
+    const raw = inp.value.trim().replace(/\./g,'').replace(',','.');
+    const v = raw === '' ? null : parseFloat(raw);
+    if (raw === '' || !isNaN(v)){
+      const oldP = p.price;
+      p.price = v;
+      const r = await callApi("update", { product: p });
+      if (r) { toast(`💰 Precio actualizado: ${p.name}`, "success"); }
+      else { p.price = oldP; }
+    }
+    render();
+  }
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', e=>{
+    if (e.key === 'Enter') inp.blur();
+    if (e.key === 'Escape'){ el.textContent = oldText; }
+  });
+}
+
+async function changeCategory(code, val){
+  const p = state.data.find(x=>x.code===code);
+  if (p && p.category !== val){
+    const old = p.category;
+    p.category = val;
+    const r = await callApi("update", { product: p });
+    if (r) toast(`📂 ${p.name} → ${val}`, "success");
+    else p.category = old;  // revert
+  }
+}
+
+async function toggleStock(code){
+  const p = state.data.find(x=>x.code===code);
+  if (p){
+    p.no_stock = !p.no_stock;
+    const r = await callApi("update", { product: p });
+    if (r) { toast(p.no_stock ? `❌ ${p.name} marcado sin stock` : `✅ ${p.name} disponible`, "success"); render(); }
+    else p.no_stock = !p.no_stock;
+  }
+}
+
+function changePhoto(code){
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/*';
+  inp.onchange = async (e)=>{
+    const f = e.target.files[0];
+    if (!f) return;
+    const p = state.data.find(x=>x.code===code);
+    // In the real backend: upload to Blobs. Here just simulate.
+    toast(`📷 Subiendo "${f.name}"… (mock)`, "success");
+    setTimeout(()=>{
+      // For demo: set photo data URL
+      const reader = new FileReader();
+      const user = window.netlifyIdentity?.currentUser();
+    if (!user) { toast("⚠️ Sesión expirada", "error"); return; }
+    const token = await user.jwt();
+    const form = new FormData();
+    form.append("file", f);
+    form.append("code", code);
+    const r = await fetch("/api/upload-photo", { method:"POST", headers: { authorization: `Bearer ${token}` }, body: form });
+    if (r.ok) {
+      const data = await r.json();
+      p.photo = data.ext;
+      render();
+      toast(`✅ Foto cambiada en ${p.name}`, "success");
+    } else {
+      const e = await r.json().catch(()=>({error:"upload failed"}));
+      toast(`⚠️ ${e.error}`, "error");
+    }
+    }, 100);
+  };
+  inp.click();
+}
+
+// === Modals ===
+function openAddModal(){
+  document.getElementById('modal-title').textContent = '＋ Nuevo producto';
+  ['f-name','f-code','f-price'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-cat').value = CATS[0];
+  document.getElementById('f-stock').value = 'false';
+  document.getElementById('upload-default').style.display = '';
+  document.getElementById('upload-preview').style.display = 'none';
+  document.getElementById('add-modal').classList.add('open');
+}
+function closeAddModal(){ document.getElementById('add-modal').classList.remove('open'); }
+
+function previewPhoto(input){
+  const f = input.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    document.getElementById('upload-default').style.display = 'none';
+    const img = document.getElementById('upload-preview');
+    img.src = reader.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(f);
+}
+
+async function saveProduct(){
+  const name = document.getElementById('f-name').value.trim();
+  const code = document.getElementById('f-code').value.trim();
+  if (!name || !code){ toast("⚠️ Nombre y código son obligatorios", "error"); return; }
+  if (state.data.some(p=>p.code===code)){ toast(`⚠️ El código "${code}" ya existe`, "error"); return; }
+  const priceRaw = document.getElementById('f-price').value.trim().replace(/\./g,'').replace(',','.');
+  const price = priceRaw === '' ? null : parseFloat(priceRaw);
+  const cat = document.getElementById('f-cat').value;
+  const no_stock = document.getElementById('f-stock').value === 'true';
+  const code_safe = code.replace(/[\/<>:"|?*]/g, '_');
+  const fileInp = document.getElementById('f-photo');
+  const f = fileInp.files[0];
+  const photoExt = f ? (f.name.split('.').pop() || 'png') : null;
+  const newProd = {code, code_safe, name, category: cat, price, photo: photoExt, no_stock};
+  const r = await callApi("create", { product: newProd });
+  if (r) {
+    state.data.unshift(newProd);
+    closeAddModal();
+    render();
+    toast(`✅ Producto agregado: ${name}`, "success");
+  }
+}
+
+function askDelete(code){
+  state.pendingDelete = code;
+  const p = state.data.find(x=>x.code===code);
+  document.getElementById('del-name').textContent = p ? p.name : code;
+  document.getElementById('delete-modal').classList.add('open');
+}
+function closeDeleteModal(){ document.getElementById('delete-modal').classList.remove('open'); state.pendingDelete = null; }
+async function confirmDelete(){
+  if (!state.pendingDelete) return;
+  const p = state.data.find(x=>x.code===state.pendingDelete);
+  const r = await callApi("delete", { code: state.pendingDelete });
+  if (r) {
+    state.data = state.data.filter(x=>x.code!==state.pendingDelete);
+    closeDeleteModal();
+    render();
+    toast(`🗑 ${p?.name || 'Producto'} eliminado`, "success");
+  }
+}
+
+// === Toast ===
+let toastTimer;
+function toast(msg, type="success"){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.className = 'toast'; }, 2400);
+}
+
+// === Wire search & filter ===
+let searchTimer;
+document.getElementById('search').addEventListener('input', e=>{
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(()=>{ state.search = e.target.value; state.page = 1; render(); }, 120);
+});
+document.getElementById('filter-cat').addEventListener('change', e=>{ state.category = e.target.value; state.page = 1; render(); });
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click', e=>{
+    if (e.target === o) o.classList.remove('open');
+  });
+});
+document.addEventListener('keydown', e=>{
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+});
+
+
+// === Netlify Identity wiring ===
+const identity = window.netlifyIdentity;
+const loginScreen = document.getElementById('login-screen');
+const showLogin = () => { loginScreen.style.display = 'flex'; document.body.style.overflow='hidden'; };
+const hideLogin = () => { loginScreen.style.display = 'none'; document.body.style.overflow=''; };
+
+document.getElementById('btn-login').addEventListener('click', () => identity.open());
+document.querySelector('.btn-logout').addEventListener('click', () => identity.logout());
+
+identity.on('init', async user => {
+  if (user) {
+    hideLogin();
+    document.querySelector('.user-chip').textContent = `👤 ${user.user_metadata?.full_name || user.email}`;
+    state.data = await loadData();
+    render();
+  } else {
+    showLogin();
+  }
+});
+identity.on('login', async user => {
+  identity.close();
+  hideLogin();
+  document.querySelector('.user-chip').textContent = `👤 ${user.user_metadata?.full_name || user.email}`;
+  state.data = await loadData();
+  render();
+});
+identity.on('logout', () => { showLogin(); });
+identity.init();
+</script>
+</body>
+</html>

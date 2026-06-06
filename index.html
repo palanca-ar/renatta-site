@@ -889,6 +889,8 @@ function sendOrderWA(){
   const msg = Object.keys(state.cart).length
     ? buildOrderMessage()
     : "¡Hola Renatta! 🐾 Quería consultarles sobre productos del catálogo.";
+  const total = Object.entries(state.cart).reduce((s,[c,q])=>{ const p=PRODUCTS.find(x=>x.code===c); return s+(p?.price||0)*q; }, 0);
+  logEvent("wa_order", null, total);
   window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
@@ -896,6 +898,7 @@ function sendOrderWA(){
 function openLightbox(code){
   const p = PRODUCTS.find(x=>x.code===code);
   if (!p || !p.photo) return;
+  logEvent('view_product', code);
   document.getElementById("lb-img").src = `fotos/${p.code_safe}.${p.photo}`;
   document.getElementById("lb-img").alt = p.name;
   document.getElementById("lb-caption").textContent = `${p.name} · ${p.code}`;
@@ -944,6 +947,14 @@ document.getElementById("search").addEventListener("input", e=>{
 document.getElementById("only-stock").addEventListener("change", e=>{
   state.onlyInStock = e.target.checked; renderMain();
 });
+
+
+// === Tracking de eventos para el dashboard ===
+async function logEvent(type, code, value){
+  try { await fetch("/api/log-event", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ type, code, value }) }); }
+  catch(e) { /* silent */ }
+}
+logEvent("visit");
 
 renderChips();
 renderMain();
