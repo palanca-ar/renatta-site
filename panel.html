@@ -1092,7 +1092,25 @@ identity.on("login", user => {
   bootPanel(user);
 });
 identity.on("logout", () => showLogin("Iniciá sesión para administrar el catálogo"));
-// identity.init();  // widget auto-init
+// Inicializar Identity después de que la página esté completamente cargada
+function initIdentity(){
+  try {
+    identity.init();
+  } catch(e) { console.error('Identity init error:', e); }
+  // Backup: chequear currentUser por si el evento init no se dispara
+  setTimeout(() => {
+    const u = identity.currentUser();
+    if (u && loginScreen.style.display !== 'none') {
+      // ya hay user logueado, ocultar el login
+      const fn = (typeof bootPanel !== 'undefined') ? bootPanel : (typeof bootDashboard !== 'undefined' ? bootDashboard : null);
+      if (fn) fn(u);
+    } else if (!u && loginScreen.style.display === 'none') {
+      showLogin();
+    }
+  }, 800);
+}
+if (document.readyState === 'complete' && window.netlifyIdentity) initIdentity();
+else window.addEventListener('load', initIdentity);
 </script>
 </body>
 </html>
