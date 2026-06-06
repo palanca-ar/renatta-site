@@ -4,7 +4,7 @@ import { requireAuth, jsonResponse, errorResponse } from "./_auth.js";
 export default async (req, context) => {
   if (req.method !== "GET") return errorResponse("method not allowed", 405);
   
-  const auth = requireAuth(context);
+  const auth = requireAuth(req);
   if (!auth.ok) return auth.response;
   
   const url = new URL(req.url);
