@@ -903,8 +903,19 @@ function editPrice(el, code){
   const inp = el.querySelector("input");
   inp.focus(); inp.select();
   const save = async () => {
-    const raw = inp.value.trim().replace(/\./g,"").replace(",",".");
-    const v = raw === "" ? null : parseFloat(raw);
+    let raw = inp.value.trim();
+    let v = null;
+    if (raw !== "") {
+      // Detectar formato: argentino ($1.234,56 / 1.234,56) vs JS (1234.56)
+      // Argentino tiene COMA como decimal. Si hay coma, asumir argentino.
+      // Si no hay coma pero hay punto, asumir JS estándar.
+      if (raw.includes(",")) {
+        // Argentino: quitar puntos de miles, cambiar coma por punto
+        raw = raw.replace(/\./g,"").replace(",",".");
+      }
+      // Si no tiene coma, dejarlo como está (el punto ya es decimal en JS)
+      v = parseFloat(raw);
+    }
     if (raw === "" || !isNaN(v)){
       p.price = v;
       const r = await callApi("update", { product: p });
@@ -999,8 +1010,12 @@ async function saveProduct(){
   const code = document.getElementById("f-code").value.trim();
   if (!name || !code){ toast("⚠️ Nombre y código son obligatorios", "error"); return; }
   if (state.data.some(p=>p.code===code)){ toast(`⚠️ Código "${code}" ya existe`, "error"); return; }
-  const priceRaw = document.getElementById("f-price").value.trim().replace(/\./g,"").replace(",",".");
-  const price = priceRaw === "" ? null : parseFloat(priceRaw);
+  let priceRaw = document.getElementById("f-price").value.trim();
+  let price = null;
+  if (priceRaw !== "") {
+    if (priceRaw.includes(",")) priceRaw = priceRaw.replace(/\./g,"").replace(",",".");
+    price = parseFloat(priceRaw);
+  }
   const cat = document.getElementById("f-cat").value;
   const no_stock = document.getElementById("f-stock").value === "true";
   const code_safe = code.replace(/[\\\/<>:"|?*]/g, "_");
