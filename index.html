@@ -585,6 +585,18 @@ footer a:hover { color: var(--yellow); opacity: 1; }
 </head>
 <body>
 
+<script>
+// Si llega un token de Identity (invite, recovery, confirmation), redirigir al panel
+// donde está el widget para manejar el flow
+(function(){
+  var h = location.hash;
+  if (h.indexOf('#invite_token=') === 0 || h.indexOf('#recovery_token=') === 0 || h.indexOf('#confirmation_token=') === 0 || h.indexOf('#email_change_token=') === 0) {
+    location.replace('/panel.html' + h);
+  }
+})();
+</script>
+
+
 <!-- SVG patitas (reutilizado en placeholders y mini-thumbs) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="paws" viewBox="0 0 100 100">
