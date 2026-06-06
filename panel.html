@@ -733,25 +733,39 @@ main {
 <div class="toast" id="toast"></div>
 
 <script>
-const PAWS = '<svg viewBox="0 0 100 100"><use href="#paws"/></svg>';
-const CATS = ["Juguetes y Rascadores", "Camas y Ropa", "Higiene y Peluquer\u00eda", "Paseo y Transporte", "Pl\u00e1sticos y Comederos", "Snacks y Varios"];
-const STORAGE_KEY = "renatta_panel_mock_v1";
 
-async function loadData(){
-  try {
-    const r = await fetch("/api/get-products");
-    if (!r.ok) throw new Error("Failed to load products");
-    return await r.json();
-  } catch(e) {
-    console.error("Error loading products:", e);
-    toast("⚠️ Error cargando productos del servidor", "error");
-    return [];
-  }
+const PAWS = '<svg viewBox="0 0 100 100"><use href="#paws"/></svg>';
+const CATS = ["Juguetes y Rascadores","Camas y Ropa","Higiene y Peluquería","Paseo y Transporte","Plásticos y Comederos","Snacks y Varios"];
+const REQUIRED_ROLE = "admin";
+
+const state = { data: [], search: "", category: "", pendingDelete: null, page: 1 };
+const PAGE_SIZE = 25;
+
+const fmtAR = n => n != null ? new Intl.NumberFormat("es-AR", {style:"currency", currency:"ARS", maximumFractionDigits: n%1===0 ? 0 : 2}).format(n) : "Consultar";
+const escapeHTML = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+const identity = window.netlifyIdentity;
+const loginScreen = document.getElementById("login-screen");
+const showLogin = (msg) => {
+  if (msg) document.getElementById("login-msg").textContent = msg;
+  loginScreen.style.display = "flex";
+  document.body.style.overflow="hidden";
+};
+const hideLogin = () => { loginScreen.style.display="none"; document.body.style.overflow=""; };
+
+document.getElementById("btn-login").addEventListener("click", () => identity.open());
+document.querySelector(".btn-logout").addEventListener("click", () => identity.logout());
+
+function hasAdminRole(user) {
+  if (!user) return false;
+  const roles = user.app_metadata?.roles || [];
+  return roles.includes(REQUIRED_ROLE);
 }
-async function saveData(){ /* no-op: cada cambio se persiste individualmente via API */ }
+
 async function callApi(action, payload){
-  const user = window.netlifyIdentity?.currentUser();
-  if (!user) { toast("⚠️ Sesión expirada — refrescá la página", "error"); return null; }
+  const user = identity.currentUser();
+  if (!user) { toast("⚠️ Sesión expirada", "error"); return null; }
+  if (!hasAdminRole(user)) { toast("⚠️ Sin permisos", "error"); return null; }
   const token = await user.jwt();
   const r = await fetch("/api/save-product", {
     method: "POST",
@@ -761,19 +775,17 @@ async function callApi(action, payload){
   if (!r.ok) { const e = await r.json().catch(()=>({error:"unknown"})); toast(`⚠️ ${e.error}`, "error"); return null; }
   return await r.json();
 }
-function resetDemo(){ localStorage.removeItem(STORAGE_KEY); state.data = structuredClone(ORIGINAL); render(); toast("Datos del demo reseteados", "success"); }
 
-const state = {
-  data: [],
-  search: "",
-  category: "",
-  pendingDelete: null,
-  editingCode: null
-};
-
-const fmtAR = n => n != null ? new Intl.NumberFormat("es-AR", {style:"currency", currency:"ARS", maximumFractionDigits: n%1===0 ? 0 : 2}).format(n) : "Consultar";
-
-function escapeHTML(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+async function loadData(){
+  try {
+    const r = await fetch("/api/get-products");
+    if (!r.ok) throw new Error("Failed");
+    return await r.json();
+  } catch(e) {
+    toast("⚠️ Error cargando productos", "error");
+    return [];
+  }
+}
 
 function filtered(){
   return state.data.filter(p=>{
@@ -804,11 +816,8 @@ function row(p){
   const catOptions = CATS.map(c=>`<option ${c===p.category?'selected':''}>${c}</option>`).join("");
   return `
     <div class="product-row ${p.no_stock?'no-stock-row':''}" data-code="${escapeHTML(p.code)}">
-      <div class="thumb ${photoClass}" onclick="changePhoto('${escapeHTML(p.code)}')">
-        ${photo}
-        <span class="hover-edit">📷 Cambiar</span>
-      </div>
-      <div class="cell-name" ondblclick="editName(this, '${escapeHTML(p.code)}')" onclick="editName(this, '${escapeHTML(p.code)}')">${escapeHTML(p.name)}</div>
+      <div class="thumb ${photoClass}" onclick="changePhoto('${escapeHTML(p.code)}')">${photo}<span class="hover-edit">📷 Cambiar</span></div>
+      <div class="cell-name" onclick="editName(this, '${escapeHTML(p.code)}')">${escapeHTML(p.name)}</div>
       <div class="cell-code"><span class="cell-code">${escapeHTML(p.code)}</span></div>
       <div class="cell-cat"><select onchange="changeCategory('${escapeHTML(p.code)}', this.value)">${catOptions}</select></div>
       <div class="cell-price-wrap"><span class="cell-price ${p.price==null?'consult':''}" onclick="editPrice(this, '${escapeHTML(p.code)}')">${p.price!=null ? fmtAR(p.price) : 'Consultar'}</span></div>
@@ -820,28 +829,18 @@ function row(p){
     </div>`;
 }
 
-
-const PAGE_SIZE = 25;
-state.page = 1;
-
-function exportCSV(){
+function render(){
+  updateStats();
   const list = filtered();
-  const rows = [["Codigo","Nombre","Categoria","Precio","Stock"]];
-  list.forEach(p=>{
-    rows.push([p.code, p.name, p.category, p.price ?? "Consultar", p.no_stock ? "Sin stock" : "Disponible"]);
-  });
-  const csv = rows.map(r=>r.map(c=>{
-    const s = String(c ?? "");
-    return /[,";\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
-  }).join(",")).join("\n");
-  const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  const fecha = new Date().toISOString().slice(0,10);
-  a.href = url; a.download = `renatta-catalogo-${fecha}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-  toast(`📥 CSV descargado (${list.length} productos)`, "success");
+  const rows = document.getElementById("rows");
+  if (!list.length){
+    rows.innerHTML = state.data.length ? `<div class="empty-state"><h3>No hay productos con ese filtro</h3></div>` : `<div class="empty-state"><h3>Cargando productos…</h3></div>`;
+    document.getElementById("pagination").innerHTML = "";
+    return;
+  }
+  const start = (state.page - 1) * PAGE_SIZE;
+  rows.innerHTML = list.slice(start, start + PAGE_SIZE).map(row).join("");
+  renderPagination(list.length);
 }
 
 function renderPagination(total){
@@ -850,7 +849,6 @@ function renderPagination(total){
   if (pages <= 1){ pag.innerHTML = ""; return; }
   const p = state.page;
   let html = `<button onclick="goPage(${p-1})" ${p===1?'disabled':''}>‹</button>`;
-  // Smart page numbers
   const nums = new Set([1, 2, pages-1, pages, p-1, p, p+1]);
   let prev = 0;
   [...nums].filter(n=>n>=1 && n<=pages).sort((a,b)=>a-b).forEach(n=>{
@@ -865,68 +863,57 @@ function renderPagination(total){
 
 function goPage(n){ state.page = n; render(); window.scrollTo({top:200, behavior:'smooth'}); }
 
-
-function render(){
-  updateStats();
-  const list = filtered();
-  const rows = document.getElementById("rows");
-  if (!list.length){
-    rows.innerHTML = `<div class="empty-state"><h3>No hay productos</h3><p>Cambiá el filtro o agregá uno nuevo.</p></div>`;
-    return;
-  }
-  const start = (state.page - 1) * PAGE_SIZE;
-  const pageItems = list.slice(start, start + PAGE_SIZE);
-  rows.innerHTML = pageItems.map(row).join("");
-  renderPagination(list.length);
-}
-
-// === Inline edits ===
 function editName(el, code){
-  if (el.classList.contains('editing')) return;
-  el.classList.add('editing');
+  if (el.classList.contains("editing")) return;
+  el.classList.add("editing");
   const old = el.textContent;
   el.innerHTML = `<input type="text" value="${escapeHTML(old)}">`;
-  const inp = el.querySelector('input');
+  const inp = el.querySelector("input");
   inp.focus(); inp.select();
-  function save(){
+  const save = async () => {
     const v = inp.value.trim();
     if (v && v !== old){
       const p = state.data.find(x=>x.code===code);
-      if (p){ p.name = v; saveData(state.data); toast(`✅ "${v}" actualizado`, "success"); }
+      if (p){
+        p.name = v;
+        const r = await callApi("update", { product: p });
+        if (r) toast(`✅ "${v}" actualizado`, "success");
+        else p.name = old;
+      }
     }
-    el.classList.remove('editing');
+    el.classList.remove("editing");
     el.textContent = v || old;
-  }
-  inp.addEventListener('blur', save);
-  inp.addEventListener('keydown', e=>{
-    if (e.key === 'Enter') inp.blur();
-    if (e.key === 'Escape'){ el.classList.remove('editing'); el.textContent = old; }
+  };
+  inp.addEventListener("blur", save);
+  inp.addEventListener("keydown", e=>{
+    if (e.key === "Enter") inp.blur();
+    if (e.key === "Escape"){ el.classList.remove("editing"); el.textContent = old; }
   });
 }
 
 function editPrice(el, code){
-  if (el.querySelector('input')) return;
+  if (el.querySelector("input")) return;
   const p = state.data.find(x=>x.code===code);
   const oldText = el.textContent;
+  const oldPrice = p.price;
   el.innerHTML = `<input type="text" value="${p.price ?? ''}" inputmode="decimal" placeholder="Vacío = Consultar">`;
-  const inp = el.querySelector('input');
+  const inp = el.querySelector("input");
   inp.focus(); inp.select();
-  async function save(){
-    const raw = inp.value.trim().replace(/\./g,'').replace(',','.');
-    const v = raw === '' ? null : parseFloat(raw);
-    if (raw === '' || !isNaN(v)){
-      const oldP = p.price;
+  const save = async () => {
+    const raw = inp.value.trim().replace(/\./g,"").replace(",",".");
+    const v = raw === "" ? null : parseFloat(raw);
+    if (raw === "" || !isNaN(v)){
       p.price = v;
       const r = await callApi("update", { product: p });
-      if (r) { toast(`💰 Precio actualizado: ${p.name}`, "success"); }
-      else { p.price = oldP; }
+      if (r) toast(`💰 Precio actualizado`, "success");
+      else p.price = oldPrice;
     }
     render();
-  }
-  inp.addEventListener('blur', save);
-  inp.addEventListener('keydown', e=>{
-    if (e.key === 'Enter') inp.blur();
-    if (e.key === 'Escape'){ el.textContent = oldText; }
+  };
+  inp.addEventListener("blur", save);
+  inp.addEventListener("keydown", e=>{
+    if (e.key === "Enter") inp.blur();
+    if (e.key === "Escape"){ el.textContent = oldText; }
   });
 }
 
@@ -937,92 +924,85 @@ async function changeCategory(code, val){
     p.category = val;
     const r = await callApi("update", { product: p });
     if (r) toast(`📂 ${p.name} → ${val}`, "success");
-    else p.category = old;  // revert
+    else p.category = old;
   }
 }
 
 async function toggleStock(code){
   const p = state.data.find(x=>x.code===code);
-  if (p){
-    p.no_stock = !p.no_stock;
-    const r = await callApi("update", { product: p });
-    if (r) { toast(p.no_stock ? `❌ ${p.name} marcado sin stock` : `✅ ${p.name} disponible`, "success"); render(); }
-    else p.no_stock = !p.no_stock;
-  }
+  if (!p) return;
+  p.no_stock = !p.no_stock;
+  const r = await callApi("update", { product: p });
+  if (r) { toast(p.no_stock ? `❌ ${p.name} sin stock` : `✅ ${p.name} disponible`, "success"); render(); }
+  else p.no_stock = !p.no_stock;
 }
 
 function changePhoto(code){
-  const inp = document.createElement('input');
-  inp.type = 'file';
-  inp.accept = 'image/*';
+  const inp = document.createElement("input");
+  inp.type = "file";
+  inp.accept = "image/*";
   inp.onchange = async (e)=>{
     const f = e.target.files[0];
     if (!f) return;
     const p = state.data.find(x=>x.code===code);
-    // In the real backend: upload to Blobs. Here just simulate.
-    toast(`📷 Subiendo "${f.name}"… (mock)`, "success");
-    setTimeout(()=>{
-      // For demo: set photo data URL
-      const reader = new FileReader();
-      const user = window.netlifyIdentity?.currentUser();
-    if (!user) { toast("⚠️ Sesión expirada", "error"); return; }
-    const token = await user.jwt();
+    if (!hasAdminRole(identity.currentUser())) { toast("⚠️ Sin permisos", "error"); return; }
+    const token = await identity.currentUser().jwt();
     const form = new FormData();
     form.append("file", f);
     form.append("code", code);
-    const r = await fetch("/api/upload-photo", { method:"POST", headers: { authorization: `Bearer ${token}` }, body: form });
-    if (r.ok) {
-      const data = await r.json();
-      p.photo = data.ext;
-      render();
-      toast(`✅ Foto cambiada en ${p.name}`, "success");
-    } else {
-      const e = await r.json().catch(()=>({error:"upload failed"}));
-      toast(`⚠️ ${e.error}`, "error");
-    }
-    }, 100);
+    toast(`📷 Subiendo ${f.name}…`, "success");
+    try {
+      const r = await fetch("/api/upload-photo", { method:"POST", headers: { authorization: `Bearer ${token}` }, body: form });
+      if (r.ok) {
+        const data = await r.json();
+        p.photo = data.ext;
+        render();
+        toast(`✅ Foto cambiada en ${p.name}`, "success");
+      } else {
+        const err = await r.json().catch(()=>({error:"upload failed"}));
+        toast(`⚠️ ${err.error}`, "error");
+      }
+    } catch(err) { toast(`⚠️ ${err.message}`, "error"); }
   };
   inp.click();
 }
 
-// === Modals ===
 function openAddModal(){
-  document.getElementById('modal-title').textContent = '＋ Nuevo producto';
-  ['f-name','f-code','f-price'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-cat').value = CATS[0];
-  document.getElementById('f-stock').value = 'false';
-  document.getElementById('upload-default').style.display = '';
-  document.getElementById('upload-preview').style.display = 'none';
-  document.getElementById('add-modal').classList.add('open');
+  document.getElementById("modal-title").textContent = "＋ Nuevo producto";
+  ["f-name","f-code","f-price"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("f-cat").value = CATS[0];
+  document.getElementById("f-stock").value = "false";
+  document.getElementById("upload-default").style.display = "";
+  document.getElementById("upload-preview").style.display = "none";
+  document.getElementById("add-modal").classList.add("open");
 }
-function closeAddModal(){ document.getElementById('add-modal').classList.remove('open'); }
+function closeAddModal(){ document.getElementById("add-modal").classList.remove("open"); }
 
 function previewPhoto(input){
   const f = input.files[0];
   if (!f) return;
   const reader = new FileReader();
   reader.onload = ()=>{
-    document.getElementById('upload-default').style.display = 'none';
-    const img = document.getElementById('upload-preview');
+    document.getElementById("upload-default").style.display = "none";
+    const img = document.getElementById("upload-preview");
     img.src = reader.result;
-    img.style.display = 'block';
+    img.style.display = "block";
   };
   reader.readAsDataURL(f);
 }
 
 async function saveProduct(){
-  const name = document.getElementById('f-name').value.trim();
-  const code = document.getElementById('f-code').value.trim();
+  const name = document.getElementById("f-name").value.trim();
+  const code = document.getElementById("f-code").value.trim();
   if (!name || !code){ toast("⚠️ Nombre y código son obligatorios", "error"); return; }
-  if (state.data.some(p=>p.code===code)){ toast(`⚠️ El código "${code}" ya existe`, "error"); return; }
-  const priceRaw = document.getElementById('f-price').value.trim().replace(/\./g,'').replace(',','.');
-  const price = priceRaw === '' ? null : parseFloat(priceRaw);
-  const cat = document.getElementById('f-cat').value;
-  const no_stock = document.getElementById('f-stock').value === 'true';
-  const code_safe = code.replace(/[\/<>:"|?*]/g, '_');
-  const fileInp = document.getElementById('f-photo');
-  const f = fileInp.files[0];
-  const photoExt = f ? (f.name.split('.').pop() || 'png') : null;
+  if (state.data.some(p=>p.code===code)){ toast(`⚠️ Código "${code}" ya existe`, "error"); return; }
+  const priceRaw = document.getElementById("f-price").value.trim().replace(/\./g,"").replace(",",".");
+  const price = priceRaw === "" ? null : parseFloat(priceRaw);
+  const cat = document.getElementById("f-cat").value;
+  const no_stock = document.getElementById("f-stock").value === "true";
+  const code_safe = code.replace(/[\\\/<>:"|?*]/g, "_");
+  const f = document.getElementById("f-photo").files[0];
+  const photoExt = f ? (f.name.split(".").pop() || "png") : null;
   const newProd = {code, code_safe, name, category: cat, price, photo: photoExt, no_stock};
   const r = await callApi("create", { product: newProd });
   if (r) {
@@ -1036,10 +1016,10 @@ async function saveProduct(){
 function askDelete(code){
   state.pendingDelete = code;
   const p = state.data.find(x=>x.code===code);
-  document.getElementById('del-name').textContent = p ? p.name : code;
-  document.getElementById('delete-modal').classList.add('open');
+  document.getElementById("del-name").textContent = p ? p.name : code;
+  document.getElementById("delete-modal").classList.add("open");
 }
-function closeDeleteModal(){ document.getElementById('delete-modal').classList.remove('open'); state.pendingDelete = null; }
+function closeDeleteModal(){ document.getElementById("delete-modal").classList.remove("open"); state.pendingDelete = null; }
 async function confirmDelete(){
   if (!state.pendingDelete) return;
   const p = state.data.find(x=>x.code===state.pendingDelete);
@@ -1052,62 +1032,66 @@ async function confirmDelete(){
   }
 }
 
-// === Toast ===
-let toastTimer;
-function toast(msg, type="success"){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>{ t.className = 'toast'; }, 2400);
+function exportCSV(){
+  const list = filtered();
+  const rows = [["Codigo","Nombre","Categoria","Precio","Stock"]];
+  list.forEach(p=>rows.push([p.code, p.name, p.category, p.price ?? "Consultar", p.no_stock ? "Sin stock" : "Disponible"]));
+  const csv = rows.map(r=>r.map(c=>{
+    const s = String(c ?? "");
+    return /[,";\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  }).join(",")).join("\n");
+  const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `renatta-catalogo-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast(`📥 CSV descargado`, "success");
 }
 
-// === Wire search & filter ===
+let toastTimer;
+function toast(msg, type="success"){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show " + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.className = "toast"; }, 2400);
+}
+
 let searchTimer;
-document.getElementById('search').addEventListener('input', e=>{
+document.getElementById("search").addEventListener("input", e=>{
   clearTimeout(searchTimer);
   searchTimer = setTimeout(()=>{ state.search = e.target.value; state.page = 1; render(); }, 120);
 });
-document.getElementById('filter-cat').addEventListener('change', e=>{ state.category = e.target.value; state.page = 1; render(); });
+document.getElementById("filter-cat").addEventListener("change", e=>{ state.category = e.target.value; state.page = 1; render(); });
 
-// Close modals on overlay click
-document.querySelectorAll('.modal-overlay').forEach(o=>{
-  o.addEventListener('click', e=>{
-    if (e.target === o) o.classList.remove('open');
-  });
+document.querySelectorAll(".modal-overlay").forEach(o=>{
+  o.addEventListener("click", e=>{ if (e.target === o) o.classList.remove("open"); });
 });
-document.addEventListener('keydown', e=>{
-  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+document.addEventListener("keydown", e=>{
+  if (e.key === "Escape") document.querySelectorAll(".modal-overlay.open").forEach(m=>m.classList.remove("open"));
 });
 
-
-// === Netlify Identity wiring ===
-const identity = window.netlifyIdentity;
-const loginScreen = document.getElementById('login-screen');
-const showLogin = () => { loginScreen.style.display = 'flex'; document.body.style.overflow='hidden'; };
-const hideLogin = () => { loginScreen.style.display = 'none'; document.body.style.overflow=''; };
-
-document.getElementById('btn-login').addEventListener('click', () => identity.open());
-document.querySelector('.btn-logout').addEventListener('click', () => identity.logout());
-
-identity.on('init', async user => {
-  if (user) {
-    hideLogin();
-    document.querySelector('.user-chip').textContent = `👤 ${user.user_metadata?.full_name || user.email}`;
-    state.data = await loadData();
-    render();
-  } else {
-    showLogin();
+async function bootPanel(user) {
+  if (!hasAdminRole(user)) {
+    showLogin(`Tu cuenta (${user.email}) no tiene rol "admin" para acceder al panel. Pedile a un administrador que te asigne el rol.`);
+    return;
   }
-});
-identity.on('login', async user => {
-  identity.close();
   hideLogin();
-  document.querySelector('.user-chip').textContent = `👤 ${user.user_metadata?.full_name || user.email}`;
+  document.querySelector(".user-chip").textContent = `👤 ${user.user_metadata?.full_name || user.email}`;
   state.data = await loadData();
   render();
+}
+
+identity.on("init", user => {
+  if (user) bootPanel(user);
+  else showLogin();
 });
-identity.on('logout', () => { showLogin(); });
+identity.on("login", user => {
+  identity.close();
+  bootPanel(user);
+});
+identity.on("logout", () => showLogin("Iniciá sesión para administrar el catálogo"));
 identity.init();
 </script>
 </body>

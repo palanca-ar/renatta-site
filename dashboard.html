@@ -479,237 +479,34 @@ main { max-width: 1400px; margin: 0 auto; padding: 24px; }
 </main>
 
 <script>
-let DATA = {};
+
 const PAWS = '<svg viewBox="0 0 100 100"><use href="#paws"/></svg>';
+const REQUIRED_ROLE = "admin";
+let DATA = {};
 
 const fmtAR = n => new Intl.NumberFormat("es-AR", {style:"currency", currency:"ARS", maximumFractionDigits:0}).format(n);
 const fmtNum = n => new Intl.NumberFormat("es-AR").format(n);
 
-function pctDelta(curr, prev){
-  if (!prev) return null;
-  const d = ((curr - prev) / prev) * 100;
-  return {pct: Math.round(d), up: d >= 0};
+const identity = window.netlifyIdentity;
+const loginScreen = document.getElementById("login-screen");
+const showLogin = (msg) => {
+  if (msg) document.getElementById("login-msg").textContent = msg;
+  loginScreen.style.display = "flex";
+};
+const hideLogin = () => loginScreen.style.display = "none";
+
+document.getElementById("btn-login").addEventListener("click", () => identity.open());
+document.querySelector(".btn-logout").addEventListener("click", () => identity.logout());
+
+function hasAdminRole(user) {
+  if (!user) return false;
+  const roles = user.app_metadata?.roles || [];
+  return roles.includes(REQUIRED_ROLE);
 }
-
-function renderKPIs(){
-  document.getElementById("kpi-visits").textContent = fmtNum(DATA.semana_visits);
-  const dVisits = pctDelta(DATA.semana_visits, DATA.semana_anterior);
-  document.getElementById("kpi-visits-sub").innerHTML = `<span class="delta ${dVisits.up?'up':'down'}">${dVisits.up?'↑':'↓'} ${Math.abs(dVisits.pct)}%</span> vs semana anterior`;
-
-  document.getElementById("kpi-carts").textContent = fmtNum(DATA.total_cart_adds);
-  document.getElementById("kpi-carts-sub").innerHTML = `<span class="delta up">↑ 14%</span> vs semana anterior`;
-
-  document.getElementById("kpi-orders").textContent = DATA.orders_count;
-  document.getElementById("kpi-orders-sub").innerHTML = `<span class="delta up">↑ 22%</span> · ${(DATA.orders_count/DATA.semana_visits*100).toFixed(1)}% conversión`;
-
-  document.getElementById("kpi-amount").textContent = fmtAR(DATA.orders_total);
-  document.getElementById("kpi-amount-sub").textContent = `Promedio: ${fmtAR(DATA.orders_avg)} por pedido`;
-
-  document.getElementById("orders-count").textContent = DATA.orders_count;
-  document.getElementById("orders-total").textContent = fmtAR(DATA.orders_total);
-  document.getElementById("orders-avg").textContent = fmtAR(DATA.orders_avg);
-}
-
-function renderTop(containerId, items, valueKey, valueLabel){
-  const cont = document.getElementById(containerId);
-  cont.innerHTML = items.map((p, i)=>{
-    const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-    const photo = p.photo
-      ? `<img src="fotos/${p.code_safe}.${p.photo}" alt="" onerror="this.parentNode.classList.add('no-photo');this.outerHTML='${PAWS.replace(/'/g,"\\'")}'">`
-      : PAWS;
-    return `
-      <div class="top-item">
-        <div class="top-rank ${rankClass}">${i+1}</div>
-        <div class="top-thumb">${photo}</div>
-        <div class="top-info">
-          <div class="top-name">${p.name}</div>
-          <div class="top-meta">${p.code} · ${p.category}</div>
-        </div>
-        <div class="top-value">
-          <div class="num">${p[valueKey]}</div>
-          <div class="lbl">${valueLabel}</div>
-        </div>
-      </div>`;
-  }).join("");
-}
-
-function renderFeed(){
-  const feed = document.getElementById("feed");
-  feed.innerHTML = DATA.recent.map(e=>{
-    const cls = e.type === 'wa' ? 'wa' : '';
-    let text;
-    if (e.type === 'wa') text = `Alguien <b>${e.verb}</b> ${e.value} por <b>${e.what}</b>`;
-    else if (e.type === 'view') text = `Alguien <b>${e.verb}</b> <b>${e.value}</b> <span class="code">${e.what}</span>`;
-    else text = `Alguien <b>${e.verb}</b> <b>${e.value}</b> <span class="code">${e.what}</span>`;
-    return `<div class="feed-item">
-      <span class="feed-icon">${e.icon}</span>
-      <span class="feed-text ${cls}">${text}</span>
-      <span class="feed-when">hace ${e.minutes_ago}m</span>
-    </div>`;
-  }).join("");
-}
-
-// === CHARTS ===
-function initDashboard(){
-Chart.defaults.font.family = "Inter, sans-serif";
-Chart.defaults.color = "#6B6B6B";
-
-// Visits line chart
-new Chart(document.getElementById("chart-visits"), {
-  type: 'line',
-  data: {
-    labels: DATA.visit_days.map(d=>d.label),
-    datasets: [
-      {
-        label: 'Visitas totales',
-        data: DATA.visit_days.map(d=>d.visits),
-        borderColor: '#D62828',
-        backgroundColor: 'rgba(214,40,40,0.10)',
-        fill: true,
-        tension: 0.35,
-        pointRadius: 0,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: '#D62828',
-        borderWidth: 2.5
-      },
-      {
-        label: 'Visitas únicas',
-        data: DATA.visit_days.map(d=>d.uniques),
-        borderColor: '#F4B731',
-        backgroundColor: 'transparent',
-        fill: false,
-        tension: 0.35,
-        pointRadius: 0,
-        pointHoverRadius: 5,
-        borderWidth: 2,
-        borderDash: [4, 4]
-      }
-    ]
-  },
-  options: {
-    maintainAspectRatio: false,
-    plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: {size: 11} } } },
-    scales: {
-      y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { stepSize: 50 } },
-      x: { grid: { display: false }, ticks: { maxRotation: 0, font: {size: 10}, callback: function(v, i){ return i % 3 === 0 ? this.getLabelForValue(v) : ''; } } }
-    }
-  }
-});
-
-// Orders by category
-new Chart(document.getElementById("chart-orders-cat"), {
-  type: 'doughnut',
-  data: {
-    labels: DATA.cats_data.slice(0, 6).map(c=>c.cat),
-    datasets: [{
-      data: DATA.cats_data.slice(0, 6).map(c=>c.interactions),
-      backgroundColor: ['#D62828','#F4B731','#1FAD55','#3B82F6','#A855F7','#F39C12'],
-      borderColor: '#fff',
-      borderWidth: 2
-    }]
-  },
-  options: {
-    maintainAspectRatio: false,
-    plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: {size: 10}, padding: 6 } } },
-    cutout: '60%'
-  }
-});
-
-// Hours bar
-new Chart(document.getElementById("chart-hours"), {
-  type: 'bar',
-  data: {
-    labels: DATA.hour_activity.map(h=>String(h.hour).padStart(2,'0')+'h'),
-    datasets: [{
-      label: 'Visitas',
-      data: DATA.hour_activity.map(h=>h.activity),
-      backgroundColor: DATA.hour_activity.map(h=>h.activity>60?'#D62828':h.activity>30?'#F4B731':'#E2E2E2'),
-      borderRadius: 4,
-      barPercentage: 0.85,
-      categoryPercentage: 0.95
-    }]
-  },
-  options: {
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-      x: { grid: { display: false }, ticks: { font: {size: 9}, callback: function(v, i){ return i % 3 === 0 ? this.getLabelForValue(v) : ''; } } }
-    }
-  }
-});
-
-// Categories bar
-new Chart(document.getElementById("chart-cats"), {
-  type: 'bar',
-  data: {
-    labels: DATA.cats_data.map(c=>c.cat),
-    datasets: [{
-      label: 'Interacciones',
-      data: DATA.cats_data.map(c=>c.interactions),
-      backgroundColor: '#D62828',
-      borderRadius: 4
-    }]
-  },
-  options: {
-    maintainAspectRatio: false,
-    indexAxis: 'y',
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-      y: { grid: { display: false }, ticks: { font: {size: 11} } }
-    }
-  }
-});
-
-
-function exportMetricsCSV(){
-  const rows = [];
-  rows.push(["Reporte de métricas - Renatta Premium Pet"]);
-  rows.push(["Período","7 de mayo al 6 de junio 2026"]);
-  rows.push([]);
-  rows.push(["KPIs principales"]);
-  rows.push(["Visitas totales", DATA.semana_visits]);
-  rows.push(["Carritos iniciados", DATA.total_cart_adds]);
-  rows.push(["Pedidos enviados WhatsApp", DATA.orders_count]);
-  rows.push(["Monto total pedidos", DATA.orders_total]);
-  rows.push(["Promedio por pedido", DATA.orders_avg]);
-  rows.push([]);
-  rows.push(["Top 10 productos más vistos"]);
-  rows.push(["Rank","Codigo","Nombre","Categoria","Vistas"]);
-  DATA.top_visited.forEach((p,i)=>rows.push([i+1, p.code, p.name, p.category, p.views]));
-  rows.push([]);
-  rows.push(["Top 10 más agregados al carrito"]);
-  rows.push(["Rank","Codigo","Nombre","Categoria","Agregados al carrito"]);
-  DATA.top_cart.forEach((p,i)=>rows.push([i+1, p.code, p.name, p.category, p.adds]));
-  rows.push([]);
-  rows.push(["Visitas día a día"]);
-  rows.push(["Fecha","Visitas totales","Visitas únicas"]);
-  DATA.visit_days.forEach(d=>rows.push([d.date, d.visits, d.uniques]));
-  
-  const csv = rows.map(r=>r.map(c=>{
-    const s = String(c ?? "");
-    return /[,";\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
-  }).join(",")).join("\n");
-  const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  const fecha = new Date().toISOString().slice(0,10);
-  a.href = url; a.download = `renatta-reporte-${fecha}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-renderKPIs();
-renderTop("top-visited", DATA.top_visited, "views", "vistas");
-renderTop("top-cart", DATA.top_cart, "adds", "agreg.");
-renderFeed();
-}
-
 
 async function fetchMetrics(){
-  const user = window.netlifyIdentity?.currentUser();
-  if (!user) return null;
+  const user = identity.currentUser();
+  if (!user || !hasAdminRole(user)) return null;
   const token = await user.jwt();
   const r = await fetch("/api/metrics?days=30", { headers: { authorization: `Bearer ${token}` } });
   if (!r.ok) return null;
@@ -717,7 +514,6 @@ async function fetchMetrics(){
 }
 
 function adaptMetrics(m){
-  // Adaptar la respuesta de /api/metrics al formato que esperan los renderers
   return {
     visit_days: m.visits.daily.map(d => ({ date: d.day, label: d.day.slice(5).replace("-","/"), visits: d.visits, uniques: d.uniques })),
     semana_visits: m.visits.daily.slice(-7).reduce((s,d)=>s+d.visits,0),
@@ -727,41 +523,116 @@ function adaptMetrics(m){
     orders_total: m.orders.totalAmount,
     orders_avg: m.orders.avg,
     top_visited: m.topVisited.map(t => ({ name: t.code, code: t.code, code_safe: t.code, photo: null, category: "", views: t.views })),
-    top_cart: m.topCart.map(t => ({ name: t.code, code: t.code, code_safe: t.code, photo: null, category: "", adds: t.adds, price: 0 })),
-    cats_data: [],
+    top_cart: m.topCart.map(t => ({ name: t.code, code: t.code, code_safe: t.code, photo: null, category: "", adds: t.adds })),
     hour_activity: Object.entries(m.hourly || {}).map(([h,a]) => ({ hour: parseInt(h), activity: a })),
+    cats_data: [],
     recent: []
   };
 }
 
-// Wiring Identity
-const identity = window.netlifyIdentity;
-const loginScreen = document.getElementById('login-screen');
-document.getElementById('btn-login').addEventListener('click', () => identity.open());
-document.querySelector('.btn-logout').addEventListener('click', () => identity.logout());
+function renderDashboard() {
+  // KPIs
+  document.getElementById("kpi-visits").textContent = fmtNum(DATA.semana_visits);
+  document.getElementById("kpi-carts").textContent = fmtNum(DATA.total_cart_adds);
+  document.getElementById("kpi-orders").textContent = DATA.orders_count;
+  document.getElementById("kpi-amount").textContent = fmtAR(DATA.orders_total);
+  document.getElementById("orders-count").textContent = DATA.orders_count;
+  document.getElementById("orders-total").textContent = fmtAR(DATA.orders_total);
+  document.getElementById("orders-avg").textContent = fmtAR(DATA.orders_avg);
+  
+  Chart.defaults.font.family = "Inter, sans-serif";
+  Chart.defaults.color = "#6B6B6B";
+  
+  if (DATA.visit_days && DATA.visit_days.length > 0) {
+    new Chart(document.getElementById("chart-visits"), {
+      type: "line",
+      data: {
+        labels: DATA.visit_days.map(d=>d.label),
+        datasets: [
+          { label: "Visitas totales", data: DATA.visit_days.map(d=>d.visits), borderColor: "#D62828", backgroundColor: "rgba(214,40,40,0.10)", fill: true, tension: 0.35, pointRadius: 0, borderWidth: 2.5 },
+          { label: "Visitas únicas", data: DATA.visit_days.map(d=>d.uniques), borderColor: "#F4B731", fill: false, tension: 0.35, pointRadius: 0, borderWidth: 2, borderDash: [4,4] }
+        ]
+      },
+      options: { maintainAspectRatio: false, plugins: { legend: { position: "top", labels: { boxWidth: 12, font: {size: 11} } } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
+    });
+  }
+  
+  if (DATA.hour_activity && DATA.hour_activity.length) {
+    new Chart(document.getElementById("chart-hours"), {
+      type: "bar",
+      data: {
+        labels: DATA.hour_activity.map(h=>String(h.hour).padStart(2,"0")+"h"),
+        datasets: [{ data: DATA.hour_activity.map(h=>h.activity), backgroundColor: DATA.hour_activity.map(h=>h.activity>60?"#D62828":h.activity>30?"#F4B731":"#E2E2E2"), borderRadius: 4 }]
+      },
+      options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+  }
+  
+  // Top lists
+  function renderTop(id, items, key, lbl){
+    const el = document.getElementById(id);
+    if (!items || !items.length) { el.innerHTML = `<p style="color:#6B6B6B;text-align:center;padding:20px">Aún no hay datos suficientes</p>`; return; }
+    el.innerHTML = items.map((p, i)=>{
+      const rankClass = i===0?"gold":i===1?"silver":i===2?"bronze":"";
+      return `
+        <div class="top-item">
+          <div class="top-rank ${rankClass}">${i+1}</div>
+          <div class="top-thumb no-photo">${PAWS}</div>
+          <div class="top-info"><div class="top-name">${p.name}</div><div class="top-meta">${p.code}</div></div>
+          <div class="top-value"><div class="num">${p[key]}</div><div class="lbl">${lbl}</div></div>
+        </div>`;
+    }).join("");
+  }
+  renderTop("top-visited", DATA.top_visited, "views", "vistas");
+  renderTop("top-cart", DATA.top_cart, "adds", "agreg.");
+  
+  document.getElementById("feed").innerHTML = `<p style="color:#6B6B6B;text-align:center;padding:20px">El feed se va a poblar a medida que entren visitas al sitio</p>`;
+}
 
-async function bootDashboard(){
+function exportMetricsCSV(){
+  const rows = [];
+  rows.push(["Reporte de métricas - Renatta Premium Pet"]);
+  rows.push(["KPIs"]);
+  rows.push(["Visitas", DATA.semana_visits]);
+  rows.push(["Carritos", DATA.total_cart_adds]);
+  rows.push(["Pedidos WhatsApp", DATA.orders_count]);
+  rows.push(["Monto total", DATA.orders_total]);
+  rows.push([]);
+  rows.push(["Top productos"]);
+  rows.push(["Rank","Codigo","Vistas"]);
+  (DATA.top_visited || []).forEach((p,i)=>rows.push([i+1, p.code, p.views]));
+  const csv = rows.map(r=>r.map(c=>{ const s = String(c ?? ""); return /[,";\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; }).join(",")).join("\n");
+  const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `renatta-reporte-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function bootDashboard(user) {
+  if (!hasAdminRole(user)) {
+    showLogin(`Tu cuenta (${user.email}) no tiene rol "admin" para ver el dashboard.`);
+    return;
+  }
+  hideLogin();
+  document.querySelector(".user-chip").textContent = `👤 ${user.user_metadata?.full_name || user.email}`;
   const m = await fetchMetrics();
   if (m) {
     DATA = adaptMetrics(m);
-    initDashboard();
+    renderDashboard();
   }
 }
 
-identity.on('init', async user => {
-  if (user) { loginScreen.style.display='none'; await bootDashboard(); }
-  else { loginScreen.style.display='flex'; }
-});
-identity.on('login', async user => { identity.close(); loginScreen.style.display='none'; await bootDashboard(); });
-identity.on('logout', () => { loginScreen.style.display='flex'; });
+identity.on("init", user => { if (user) bootDashboard(user); else showLogin(); });
+identity.on("login", user => { identity.close(); bootDashboard(user); });
+identity.on("logout", () => showLogin("Iniciá sesión para ver el dashboard"));
 identity.init();
 
-// Range toggle (mock - todos los rangos muestran los mismos charts en este demo)
-document.querySelectorAll('.range-toggle button').forEach(b=>{
-  b.addEventListener('click', ()=>{
-    document.querySelectorAll('.range-toggle button').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    // En la versión real, recargaría datos. En demo solo cambia el label
+document.querySelectorAll(".range-toggle button").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    document.querySelectorAll(".range-toggle button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
   });
 });
 </script>
