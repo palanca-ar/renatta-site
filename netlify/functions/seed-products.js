@@ -10,18 +10,25 @@ export default async (req, context) => {
   
   const store = getStore("renatta-data");
   
-  // Si ya hay productos, no overrideo
+  // Si ya hay productos, no overrideo (a menos que &force=yes)
   const existing = await store.get("products", { type: "json" });
   if (existing && existing.length > 0 && url.searchParams.get("force") !== "yes") {
     return jsonResponse({ ok: false, msg: "ya hay productos cargados", count: existing.length, hint: "agregá &force=yes para overridear" });
   }
   
-  let body;
-  try { body = await req.json(); }
-  catch { return errorResponse("Pasale el array de productos como JSON en el body", 400); }
+  // Fetchear products.json del propio sitio
+  const baseUrl = `${url.protocol}//${url.host}`;
+  let products;
+  try {
+    const r = await fetch(`${baseUrl}/products.json`);
+    if (!r.ok) return errorResponse(`failed to fetch /products.json (${r.status})`, 500);
+    products = await r.json();
+  } catch (e) {
+    return errorResponse(`fetch error: ${e.message}`, 500);
+  }
   
-  if (!Array.isArray(body)) return errorResponse("Body debe ser un array de productos");
+  if (!Array.isArray(products)) return errorResponse("products.json no es un array");
   
-  await store.setJSON("products", body);
-  return jsonResponse({ ok: true, total: body.length });
+  await store.setJSON("products", products);
+  return jsonResponse({ ok: true, total: products.length, source: `${baseUrl}/products.json` });
 };
