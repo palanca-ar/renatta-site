@@ -548,6 +548,9 @@ main {
   .product-row { padding: 14px; }
   main { padding: 14px; }
 }
+
+/* Fix: Identity widget iframe debe estar por ENCIMA del login-screen */
+iframe#netlify-identity-widget { z-index: 9999 !important; }
 </style>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>

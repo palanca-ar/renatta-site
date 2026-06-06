@@ -282,6 +282,9 @@ main { max-width: 1400px; margin: 0 auto; padding: 24px; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .dash-grid, .dash-grid.thirds { grid-template-columns: 1fr; }
 }
+
+/* Fix: Identity widget iframe debe estar por ENCIMA del login-screen */
+iframe#netlify-identity-widget { z-index: 9999 !important; }
 </style>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
