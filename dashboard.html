@@ -627,7 +627,7 @@ async function bootDashboard(user) {
 identity.on("init", user => { if (user) bootDashboard(user); else showLogin(); });
 identity.on("login", user => { identity.close(); bootDashboard(user); });
 identity.on("logout", () => showLogin("Iniciá sesión para ver el dashboard"));
-identity.init();
+// identity.init();  // widget auto-init
 
 document.querySelectorAll(".range-toggle button").forEach(b=>{
   b.addEventListener("click", ()=>{
