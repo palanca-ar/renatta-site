@@ -972,5 +972,21 @@ renderChips();
 renderMain();
 updateCartUI();
 </script>
+<script>
+// FIX Bug B: sincronizar productos con el backend tras el primer render.
+// Si el panel cambió precios/nombres/fotos, esto los refleja en la web.
+(async function syncProducts() {
+  try {
+    const r = await fetch("/api/get-products", { cache: "no-store" });
+    if (!r.ok) return;
+    const remote = await r.json();
+    if (!Array.isArray(remote) || remote.length === 0) return;
+    if (typeof PRODUCTS !== "undefined") {
+      PRODUCTS.splice(0, PRODUCTS.length, ...remote);
+      if (typeof renderMain === "function") renderMain();
+    }
+  } catch (e) { console.warn("Live sync failed:", e); }
+})();
+</script>
 </body>
 </html>

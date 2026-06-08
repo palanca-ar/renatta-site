@@ -1,0 +1,6 @@
+# API endpoints
+/api/*  /.netlify/functions/:splat  200
+
+# Fotos: si el archivo estático existe en /fotos/, Netlify lo sirve directo del CDN.
+# Si NO existe (foto nueva subida por Renatta), cae a esta regla y la Function la sirve desde Blobs.
+/fotos/*  /.netlify/functions/get-photo?file=:splat  200

@@ -560,7 +560,7 @@ iframe#netlify-identity-widget { z-index: 9999 !important; }
 <div id="login-screen" style="display:none;position:fixed;inset:0;background:var(--gray-bg);z-index:1000;align-items:center;justify-content:center;flex-direction:column">
   <img src="logo.png" style="width:140px;margin-bottom:20px" onerror="this.style.display='none'">
   <h1 style="font-family:'Fredoka',sans-serif;margin:0 0 8px;font-size:24px">Panel Admin Renatta</h1>
-  <p style="margin:0 0 24px;color:var(--gray)">Iniciá sesión para administrar el catálogo</p>
+  <p id="login-msg" style="margin:0 0 24px;color:var(--gray)">Iniciá sesión para administrar el catálogo</p>
   <button id="btn-login" style="background:var(--red);color:#fff;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;cursor:pointer;border:none">Iniciar sesión</button>
 </div>
 
@@ -750,7 +750,11 @@ const escapeHTML = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;
 const identity = window.netlifyIdentity;
 const loginScreen = document.getElementById("login-screen");
 const showLogin = (msg) => {
-  if (msg) document.getElementById("login-msg").textContent = msg;
+  if (msg) {
+    const el = document.getElementById("login-msg");
+    if (el) el.textContent = msg;
+    else { const p = loginScreen.querySelector("p"); if (p) p.textContent = msg; }
+  }
   loginScreen.style.display = "flex";
   document.body.style.overflow="hidden";
 };
@@ -951,6 +955,36 @@ async function toggleStock(code){
   else p.no_stock = !p.no_stock;
 }
 
+
+// FIX Bug C: comprime imágenes en el cliente antes de subir al servidor.
+// Reduce a max 1200x1200, JPEG calidad 0.75. Las fotos de celu (5-8 MB) bajan a 200-500 KB.
+async function compressImage(file, maxSize = 1200, quality = 0.75) {
+  // Si ya es chica (<800 KB) y NO es HEIC/HEIF (formatos de iPhone que no se ven en web), devolverla tal cual
+  if (file.size < 800 * 1024 && !/\.(heic|heif)$/i.test(file.name)) return file;
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxSize || height > maxSize) {
+        if (width > height) { height = Math.round(height * (maxSize / width)); width = maxSize; }
+        else { width = Math.round(width * (maxSize / height)); height = maxSize; }
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => {
+        if (!blob) return reject(new Error("Falló la compresión de la imagen"));
+        const newName = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+        resolve(new File([blob], newName, { type: "image/jpeg" }));
+      }, "image/jpeg", quality);
+    };
+    img.onerror = () => reject(new Error("No se pudo leer la imagen (¿formato no soportado?)"));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
 function changePhoto(code){
   const inp = document.createElement("input");
   inp.type = "file";
@@ -964,7 +998,11 @@ function changePhoto(code){
     const form = new FormData();
     form.append("file", f);
     form.append("code", code);
-    toast(`📷 Subiendo ${f.name}…`, "success");
+    toast(`📷 Comprimiendo ${f.name}…`, "success");
+    let compressed;
+    try { compressed = await compressImage(f); } catch(err) { toast(`⚠️ ${err.message}`, "error"); return; }
+    form.set("file", compressed);
+    toast(`📷 Subiendo (${Math.round(compressed.size/1024)} KB)…`, "success");
     try {
       const r = await fetch("/api/upload-photo", { method:"POST", headers: { authorization: `Bearer ${token}` }, body: form });
       if (r.ok) {
@@ -1024,6 +1062,21 @@ async function saveProduct(){
   const newProd = {code, code_safe, name, category: cat, price, photo: photoExt, no_stock};
   const r = await callApi("create", { product: newProd });
   if (r) {
+    // FIX Bug C+: subir la foto del modal "Agregar producto" si hay
+    if (f) {
+      try {
+        const compressed = await compressImage(f);
+        const token = await identity.currentUser().jwt();
+        const form = new FormData();
+        form.append("file", compressed);
+        form.append("code", code);
+        const ru = await fetch("/api/upload-photo", { method:"POST", headers: { authorization: `Bearer ${token}` }, body: form });
+        if (ru.ok) {
+          const data = await ru.json();
+          newProd.photo = data.ext;
+        }
+      } catch(err) { toast(`⚠️ Foto: ${err.message}`, "error"); }
+    }
     state.data.unshift(newProd);
     closeAddModal();
     render();
