@@ -977,7 +977,7 @@ updateCartUI();
 // Si el panel cambió precios/nombres/fotos, esto los refleja en la web.
 (async function syncProducts() {
   try {
-    const r = await fetch("/api/get-products", { cache: "no-store" });
+    const r = await fetch("/api/get-products?_t=" + Date.now(), { cache: "no-store" });
     if (!r.ok) return;
     const remote = await r.json();
     if (!Array.isArray(remote) || remote.length === 0) return;
