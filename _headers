@@ -1,8 +1,22 @@
+# HTML pages: siempre revalidar con el servidor antes de usar el cache.
+# Así un F5 normal de la usuaria/cliente fuerza traer el HTML+JS más reciente,
+# y el sync de productos trae los precios actualizados al instante.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/panel.html
+  Cache-Control: public, max-age=0, must-revalidate
+/dashboard.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Fotos del catálogo: cache largo (no cambian seguido)
+/fotos/*
+  Cache-Control: public, max-age=604800, immutable
+
+# Default para el resto (assets, etc): 1h + headers de seguridad
 /*
   Cache-Control: public, max-age=3600
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
-
-/fotos/*
-  Cache-Control: public, max-age=604800, immutable
