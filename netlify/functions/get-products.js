@@ -14,7 +14,7 @@ export default async (req, context) => {
     status: 200,
     headers: {
       "content-type": "application/json; charset=utf-8",
-      "cache-control": "public, max-age=10, s-maxage=30, stale-while-revalidate=120"
+      "cache-control": "public, max-age=2, s-maxage=5, stale-while-revalidate=30"
     }
   });
 };
