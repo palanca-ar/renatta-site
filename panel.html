@@ -551,6 +551,34 @@ main {
 
 /* Fix: Identity widget iframe debe estar por ENCIMA del login-screen */
 iframe#netlify-identity-widget { z-index: 9999 !important; }
+
+/* Indicador de cola de envíos (Fix #2) */
+#queue-indicator {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: var(--yellow);
+  color: var(--dark);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 999;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+  display: none;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+#queue-indicator.active, #queue-indicator.done {
+  display: block;
+}
+#queue-indicator.done {
+  background: #d4f5dd;
+  color: #1f7a3e;
+}
+@media (max-width: 600px) {
+  #queue-indicator { top: 72px; right: 12px; left: 12px; text-align: center; font-size: 13px; }
+}
 </style>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
@@ -584,6 +612,9 @@ iframe#netlify-identity-widget { z-index: 9999 !important; }
 </svg>
 
 
+
+<!-- Indicador de cola de envíos (Fix #2) -->
+<div id="queue-indicator"></div>
 
 <header class="brand-header">
   <div class="brand-left">
@@ -769,18 +800,57 @@ function hasAdminRole(user) {
   return roles.includes(REQUIRED_ROLE);
 }
 
+// FIX cola de envíos (Fix #2): serializa las llamadas a callApi para evitar
+// race conditions cuando se hacen muchas ediciones rápidas. Cada llamada nueva
+// espera a que termine la anterior, así no se pisan datos en el backend.
+const apiQueue = { pending: 0, chain: Promise.resolve(null) };
+
+function updateQueueIndicator() {
+  const el = document.getElementById("queue-indicator");
+  if (!el) return;
+  if (apiQueue.pending === 0) {
+    el.classList.remove("active", "saving");
+    el.classList.add("done");
+    el.textContent = "✅ Todo guardado";
+    clearTimeout(window._queueHideTimer);
+    window._queueHideTimer = setTimeout(() => {
+      if (apiQueue.pending === 0) el.classList.remove("done");
+    }, 1500);
+  } else {
+    clearTimeout(window._queueHideTimer);
+    el.classList.remove("done");
+    el.classList.add("active", "saving");
+    const n = apiQueue.pending;
+    el.textContent = `💾 Guardando ${n} ${n === 1 ? "cambio" : "cambios"}…`;
+  }
+}
+
 async function callApi(action, payload){
   const user = identity.currentUser();
   if (!user) { toast("⚠️ Sesión expirada", "error"); return null; }
   if (!hasAdminRole(user)) { toast("⚠️ Sin permisos", "error"); return null; }
-  const token = await user.jwt();
-  const r = await fetch("/api/save-product", {
-    method: "POST",
-    headers: { "content-type":"application/json", "authorization": `Bearer ${token}` },
-    body: JSON.stringify({ action, ...payload })
+  apiQueue.pending++;
+  updateQueueIndicator();
+  const myTurn = apiQueue.chain.then(async () => {
+    try {
+      const token = await user.jwt();
+      const r = await fetch("/api/save-product", {
+        method: "POST",
+        headers: { "content-type":"application/json", "authorization": `Bearer ${token}` },
+        body: JSON.stringify({ action, ...payload })
+      });
+      if (!r.ok) { const e = await r.json().catch(()=>({error:"unknown"})); toast(`⚠️ ${e.error}`, "error"); return null; }
+      return await r.json();
+    } catch (e) {
+      toast(`⚠️ Error de red: ${e.message}`, "error");
+      return null;
+    } finally {
+      apiQueue.pending--;
+      updateQueueIndicator();
+    }
   });
-  if (!r.ok) { const e = await r.json().catch(()=>({error:"unknown"})); toast(`⚠️ ${e.error}`, "error"); return null; }
-  return await r.json();
+  apiQueue.chain = myTurn.catch(() => null);
+  return myTurn;
 }
 
 async function loadData(){
