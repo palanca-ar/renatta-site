@@ -840,7 +840,12 @@ async function callApi(action, payload){
         body: JSON.stringify({ action, ...payload })
       });
       if (!r.ok) { const e = await r.json().catch(()=>({error:"unknown"})); toast(`⚠️ ${e.error}`, "error"); return null; }
-      return await r.json();
+      const result = await r.json();
+      // Esperar 350ms para que la escritura al Blob se propague antes de la siguiente request.
+      // Sin esto, requests muy rápidas leen la versión vieja del Blob y se pisan entre sí
+      // (race condition del lado del backend, no del cliente).
+      await new Promise(res => setTimeout(res, 350));
+      return result;
     } catch (e) {
       toast(`⚠️ Error de red: ${e.message}`, "error");
       return null;
