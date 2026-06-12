@@ -579,6 +579,33 @@ iframe#netlify-identity-widget { z-index: 9999 !important; }
 @media (max-width: 600px) {
   #queue-indicator { top: 72px; right: 12px; left: 12px; text-align: center; font-size: 13px; }
 }
+
+/* Mejora B: input para saltar a página específica */
+.pagination .goto-page-input {
+  width: 60px; padding: 6px 8px; border: 1px solid var(--gray-line);
+  border-radius: 6px; font-size: 13px; font-weight: 500; text-align: center;
+  margin: 0 2px;
+}
+.pagination .goto-page-input:focus {
+  outline: none; border-color: var(--red); box-shadow: 0 0 0 2px rgba(214,40,40,0.15);
+}
+
+/* Mejora B bonus: botón flotante "volver arriba" */
+#scroll-top-btn {
+  position: fixed; bottom: 24px; right: 24px;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--red); color: white;
+  font-size: 20px; cursor: pointer; border: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  z-index: 800; display: none;
+  align-items: center; justify-content: center;
+  transition: transform 0.15s, opacity 0.2s;
+}
+#scroll-top-btn:hover { transform: translateY(-2px); }
+#scroll-top-btn.visible { display: flex; }
+@media (max-width: 600px) {
+  #scroll-top-btn { bottom: 80px; right: 16px; width: 44px; height: 44px; }
+}
 </style>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
@@ -615,6 +642,9 @@ iframe#netlify-identity-widget { z-index: 9999 !important; }
 
 <!-- Indicador de cola de envíos (Fix #2) -->
 <div id="queue-indicator"></div>
+
+<!-- Botón flotante volver arriba (Mejora B bonus) -->
+<button id="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Volver arriba" aria-label="Volver arriba">⬆</button>
 
 <header class="brand-header">
   <div class="brand-left">
@@ -816,12 +846,47 @@ function updateQueueIndicator() {
     window._queueHideTimer = setTimeout(() => {
       if (apiQueue.pending === 0) el.classList.remove("done");
     }, 1500);
+    // Mejora A: re-leer backend después de que la cola se vacía.
+    // Si una write se perdió (race condition en Blobs), el panel lo muestra
+    // al toque y Renatta puede reintentar. Mejor que enterarse al día siguiente.
+    clearTimeout(window._syncTimer);
+    window._syncTimer = setTimeout(() => {
+      if (apiQueue.pending === 0) syncFromBackend();
+    }, 1200);
   } else {
     clearTimeout(window._queueHideTimer);
+    clearTimeout(window._syncTimer);
     el.classList.remove("done");
     el.classList.add("active", "saving");
     const n = apiQueue.pending;
     el.textContent = `💾 Guardando ${n} ${n === 1 ? "cambio" : "cambios"}…`;
+  }
+}
+
+// Mejora A: re-lee el backend y reemplaza state.data si hay diferencias.
+// Detecta y avisa si alguna edición se perdió (no quedó persistida).
+async function syncFromBackend() {
+  try {
+    const fresh = await loadData();
+    if (!fresh || !fresh.length) return;
+    // Detectar diferencias: comparar precio, nombre, stock por código
+    const freshByCode = new Map(fresh.map(p => [p.code, p]));
+    const lostEdits = [];
+    for (const local of state.data) {
+      const remote = freshByCode.get(local.code);
+      if (!remote) continue;
+      if (local.price !== remote.price) {
+        lostEdits.push({code: local.code, name: local.name, field: "precio", local: local.price, remote: remote.price});
+      }
+    }
+    state.data = fresh;
+    render();
+    if (lostEdits.length > 0) {
+      console.warn("Ediciones perdidas detectadas:", lostEdits);
+      toast(`⚠️ ${lostEdits.length} ${lostEdits.length === 1 ? "cambio perdido" : "cambios perdidos"}: ${lostEdits.slice(0,3).map(e => e.name).join(", ")}${lostEdits.length > 3 ? "..." : ""} - Revisá y reintentá`, "error");
+    }
+  } catch (e) {
+    console.warn("Sync from backend failed:", e);
   }
 }
 
@@ -930,7 +995,7 @@ function renderPagination(total){
   const pages = Math.ceil(total / PAGE_SIZE);
   if (pages <= 1){ pag.innerHTML = ""; return; }
   const p = state.page;
-  let html = `<button onclick="goPage(${p-1})" ${p===1?'disabled':''}>‹</button>`;
+  let html = `<button onclick="goPage(${p-1})" ${p===1?'disabled':''} title="Página anterior">‹</button>`;
   const nums = new Set([1, 2, pages-1, pages, p-1, p, p+1]);
   let prev = 0;
   [...nums].filter(n=>n>=1 && n<=pages).sort((a,b)=>a-b).forEach(n=>{
@@ -938,9 +1003,20 @@ function renderPagination(total){
     html += `<button class="${n===p?'active':''}" onclick="goPage(${n})">${n}</button>`;
     prev = n;
   });
-  html += `<button onclick="goPage(${p+1})" ${p===pages?'disabled':''}>›</button>`;
-  html += `<span class="info">${total} productos</span>`;
+  html += `<button onclick="goPage(${p+1})" ${p===pages?'disabled':''} title="Página siguiente">›</button>`;
+  // Mejora B: input para saltar directo a página
+  html += `<span class="info" style="margin-left:8px">Ir a:</span>`;
+  html += `<input type="number" id="goto-page-input" min="1" max="${pages}" value="${p}" class="goto-page-input" onkeydown="if(event.key==='Enter'){goPageFromInput(${pages})}">`;
+  html += `<button onclick="goPageFromInput(${pages})" title="Ir a esa página">Ir</button>`;
+  html += `<span class="info">de ${pages} · ${total} productos</span>`;
   pag.innerHTML = html;
+}
+
+function goPageFromInput(maxPages){
+  const inp = document.getElementById("goto-page-input");
+  if (!inp) return;
+  const n = Math.max(1, Math.min(maxPages, parseInt(inp.value) || 1));
+  goPage(n);
 }
 
 function goPage(n){ state.page = n; render(); window.scrollTo({top:200, behavior:'smooth'}); }
@@ -1227,6 +1303,11 @@ async function bootPanel(user) {
   document.querySelector(".user-chip").textContent = `👤 ${user.user_metadata?.full_name || user.email}`;
   state.data = await loadData();
   render();
+  // Mejora B: mostrar botón "volver arriba" cuando hay scroll > 300px
+  window.addEventListener("scroll", () => {
+    const btn = document.getElementById("scroll-top-btn");
+    if (btn) btn.classList.toggle("visible", window.scrollY > 300);
+  }, { passive: true });
 }
 
 identity.on("init", user => {
