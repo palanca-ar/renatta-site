@@ -222,6 +222,7 @@ main {
   display: flex;
   flex-direction: column;
   transition: transform 0.15s, box-shadow 0.15s;
+  position: relative; /* FIX: ancla el badge "Sin stock" a la card en vez del viewport */
 }
 .card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
 .card.no-stock { opacity: 0.55; }
