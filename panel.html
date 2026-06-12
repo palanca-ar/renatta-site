@@ -529,7 +529,8 @@ main {
 .toast.error { background: var(--red); }
 
 
-.pagination { display: flex; justify-content: center; gap: 6px; margin-top: 16px; padding: 8px; }
+/* Mejora B (fix): flex-wrap para que la fila de paginación no desborde en mobile */
+.pagination { display: flex; justify-content: center; gap: 6px; margin-top: 16px; padding: 8px; flex-wrap: wrap; }
 .pagination button { padding: 6px 12px; border: 1px solid var(--gray-line); border-radius: 6px; background: var(--white); font-size: 13px; font-weight: 500; color: var(--gray-dark); transition: all 0.15s; min-width: 36px; }
 .pagination button:hover:not(:disabled) { background: var(--gray-soft); }
 .pagination button.active { background: var(--red); color: var(--white); border-color: var(--red); }
@@ -606,6 +607,21 @@ iframe#netlify-identity-widget { z-index: 9999 !important; }
 @media (max-width: 600px) {
   #scroll-top-btn { bottom: 80px; right: 16px; width: 44px; height: 44px; }
 }
+
+/* Mejora A v2: banner persistente de cambios perdidos (reemplaza al toast efímero) */
+#lost-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 950;
+  background: var(--red); color: var(--white);
+  padding: 12px 16px; font-size: 14px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; flex-wrap: wrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+#lost-banner button {
+  border-radius: 6px; padding: 7px 14px; font-size: 13px; font-weight: 600;
+}
+#lost-banner .lost-retry { background: var(--white); color: var(--red); }
+#lost-banner .lost-dismiss { background: rgba(0,0,0,0.25); color: var(--white); }
 </style>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
@@ -642,6 +658,13 @@ iframe#netlify-identity-widget { z-index: 9999 !important; }
 
 <!-- Indicador de cola de envíos (Fix #2) -->
 <div id="queue-indicator"></div>
+
+<!-- Banner persistente de cambios perdidos (Mejora A v2) -->
+<div id="lost-banner" style="display:none" role="alert">
+  <span id="lost-banner-msg"></span>
+  <button class="lost-retry" onclick="retryLostEdits()">Reintentar</button>
+  <button class="lost-dismiss" onclick="hideLostBanner()">Descartar</button>
+</div>
 
 <!-- Botón flotante volver arriba (Mejora B bonus) -->
 <button id="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Volver arriba" aria-label="Volver arriba">⬆</button>
@@ -835,6 +858,13 @@ function hasAdminRole(user) {
 // espera a que termine la anterior, así no se pisan datos en el backend.
 const apiQueue = { pending: 0, chain: Promise.resolve(null) };
 
+// FIX CRÍTICO: si se cierra la pestaña con cambios en cola, esos cambios se
+// pierden en silencio (la cola vive en memoria). Este guard hace que el
+// navegador pregunte antes de cerrar mientras haya escrituras pendientes.
+window.addEventListener("beforeunload", e => {
+  if (apiQueue.pending > 0) { e.preventDefault(); e.returnValue = ""; }
+});
+
 function updateQueueIndicator() {
   const el = document.getElementById("queue-indicator");
   if (!el) return;
@@ -863,27 +893,117 @@ function updateQueueIndicator() {
   }
 }
 
-// Mejora A: re-lee el backend y reemplaza state.data si hay diferencias.
-// Detecta y avisa si alguna edición se perdió (no quedó persistida).
+// Mejora A v2: helpers ------------------------------------------------------
+
+// ¿Hay una edición en curso que un render() pisaría?
+function editingInProgress() {
+  if (document.querySelector("#rows input")) return true;          // edición inline (nombre/precio)
+  if (document.querySelector(".modal-overlay.open")) return true;  // modal abierto
+  const ae = document.activeElement;
+  if (ae && ae.id === "goto-page-input") return true;              // tipeando en "Ir a:"
+  return false;
+}
+
+// Estado de "cambios perdidos" detectados (persiste hasta Reintentar/Descartar)
+const lostState = { items: [], retries: {} };
+
+function showLostBanner(items) {
+  // Merge con pérdidas anteriores no resueltas (por tipo+código)
+  const byKey = new Map(lostState.items.map(i => [i.type + ":" + i.code, i]));
+  for (const it of items) byKey.set(it.type + ":" + it.code, it);
+  lostState.items = [...byKey.values()];
+  const n = lostState.items.length;
+  const summary = lostState.items.slice(0, 3).map(i => i.name || i.code).join(", ") + (n > 3 ? ` y ${n - 3} más` : "");
+  document.getElementById("lost-banner-msg").textContent =
+    `⚠️ ${n} ${n === 1 ? "cambio no quedó guardado" : "cambios no quedaron guardados"}: ${summary}`;
+  document.getElementById("lost-banner").style.display = "flex";
+}
+
+function hideLostBanner() {
+  document.getElementById("lost-banner").style.display = "none";
+}
+
+// Re-encola los cambios perdidos con los valores que Renatta había cargado.
+// Reescribir un valor que en realidad ya estaba bien es inofensivo (idempotente),
+// así que esto es seguro incluso ante falsos positivos por lecturas stale.
+function retryLostEdits() {
+  const items = lostState.items;
+  lostState.items = [];
+  hideLostBanner();
+  for (const it of items) {
+    lostState.retries[it.code] = (lostState.retries[it.code] || 0) + 1;
+    if (lostState.retries[it.code] > 2) {
+      toast(`⚠️ ${it.name || it.code}: no se pudo guardar tras varios intentos. Refrescá la página y revisalo.`, "error");
+      continue;
+    }
+    if (it.type === "update" && it.localProduct) {
+      const idx = state.data.findIndex(p => p.code === it.code);
+      if (idx >= 0) state.data[idx] = it.localProduct; else state.data.unshift(it.localProduct);
+      callApi("update", { product: it.localProduct });
+    } else if (it.type === "create" && it.localProduct) {
+      if (!state.data.some(p => p.code === it.code)) state.data.unshift(it.localProduct);
+      callApi("create", { product: it.localProduct });
+    } else if (it.type === "delete") {
+      state.data = state.data.filter(p => p.code !== it.code);
+      callApi("delete", { code: it.code });
+    }
+  }
+  render();
+}
+
+// Mejora A v2: re-lee el backend (lectura FRESCA, sin cache CDN/navegador),
+// compara TODOS los campos editables y muestra un banner persistente con
+// "Reintentar" si detecta ediciones perdidas. No corre si hay edición en curso.
 async function syncFromBackend() {
+  if (apiQueue.pending > 0) return;
+  if (editingInProgress()) {
+    // Renatta está tipeando: no pisar la UI. Reintentar en 2s.
+    clearTimeout(window._syncTimer);
+    window._syncTimer = setTimeout(syncFromBackend, 2000);
+    return;
+  }
   try {
-    const fresh = await loadData();
+    const fresh = await loadData(true);
     if (!fresh || !fresh.length) return;
-    // Detectar diferencias: comparar precio, nombre, stock por código
+    // Si entraron ediciones nuevas mientras leíamos, abortar: el sync se
+    // reprograma solo cuando la cola vuelva a vaciarse.
+    if (apiQueue.pending > 0) return;
+    if (editingInProgress()) {
+      clearTimeout(window._syncTimer);
+      window._syncTimer = setTimeout(syncFromBackend, 2000);
+      return;
+    }
+    const clone = o => JSON.parse(JSON.stringify(o));
     const freshByCode = new Map(fresh.map(p => [p.code, p]));
-    const lostEdits = [];
+    const localByCode = new Map(state.data.map(p => [p.code, p]));
+    const FIELDS = [["name","nombre"],["category","categoría"],["price","precio"],["no_stock","stock"],["photo","foto"]];
+    const lost = [];
     for (const local of state.data) {
       const remote = freshByCode.get(local.code);
-      if (!remote) continue;
-      if (local.price !== remote.price) {
-        lostEdits.push({code: local.code, name: local.name, field: "precio", local: local.price, remote: remote.price});
+      if (!remote) {
+        // Alta perdida: el producto creado no llegó al backend
+        lost.push({ type: "create", code: local.code, name: local.name, localProduct: clone(local) });
+        continue;
+      }
+      const diffs = FIELDS.filter(([f]) => {
+        if (f === "no_stock") return !!local[f] !== !!remote[f];
+        return (local[f] ?? null) !== (remote[f] ?? null);
+      }).map(([, label]) => label);
+      if (diffs.length) {
+        lost.push({ type: "update", code: local.code, name: local.name, fields: diffs, localProduct: clone(local) });
+      }
+    }
+    for (const remote of fresh) {
+      if (!localByCode.has(remote.code)) {
+        // Baja perdida: un producto eliminado reapareció en el backend
+        lost.push({ type: "delete", code: remote.code, name: remote.name });
       }
     }
     state.data = fresh;
     render();
-    if (lostEdits.length > 0) {
-      console.warn("Ediciones perdidas detectadas:", lostEdits);
-      toast(`⚠️ ${lostEdits.length} ${lostEdits.length === 1 ? "cambio perdido" : "cambios perdidos"}: ${lostEdits.slice(0,3).map(e => e.name).join(", ")}${lostEdits.length > 3 ? "..." : ""} - Revisá y reintentá`, "error");
+    if (lost.length) {
+      console.warn("Ediciones perdidas detectadas:", lost);
+      showLostBanner(lost);
     }
   } catch (e) {
     console.warn("Sync from backend failed:", e);
@@ -923,9 +1043,15 @@ async function callApi(action, payload){
   return myTurn;
 }
 
-async function loadData(){
+// Mejora A v2: loadData(true) fuerza una lectura fresca:
+// - ?fresh=1 hace que la Function lea el Blob con consistencia fuerte y responda no-store
+//   (requiere el get-products.js actualizado; si no está, igual ayuda el cache-bust)
+// - &_t=<timestamp> cambia la cache key del CDN (bypass de s-maxage/stale-while-revalidate)
+// - cache:"no-store" evita el cache del navegador (max-age=2)
+async function loadData(fresh = false){
   try {
-    const r = await fetch("/api/get-products");
+    const url = fresh ? `/api/get-products?fresh=1&_t=${Date.now()}` : "/api/get-products";
+    const r = await fetch(url, fresh ? { cache: "no-store" } : undefined);
     if (!r.ok) throw new Error("Failed");
     return await r.json();
   } catch(e) {
@@ -982,9 +1108,13 @@ function render(){
   const rows = document.getElementById("rows");
   if (!list.length){
     rows.innerHTML = state.data.length ? `<div class="empty-state"><h3>No hay productos con ese filtro</h3></div>` : `<div class="empty-state"><h3>Cargando productos…</h3></div>`;
-    document.getElementById("pagination").innerHTML = "";
+    const pag = document.getElementById("pagination");
+    pag.innerHTML = ""; pag.dataset.sig = "";
     return;
   }
+  // Mejora B (fix): clamp por si el sync trae menos productos y la página actual quedó fuera de rango
+  const pages = Math.ceil(list.length / PAGE_SIZE);
+  if (state.page > pages) setPage(pages);
   const start = (state.page - 1) * PAGE_SIZE;
   rows.innerHTML = list.slice(start, start + PAGE_SIZE).map(row).join("");
   renderPagination(list.length);
@@ -993,8 +1123,15 @@ function render(){
 function renderPagination(total){
   const pag = document.getElementById("pagination");
   const pages = Math.ceil(total / PAGE_SIZE);
-  if (pages <= 1){ pag.innerHTML = ""; return; }
+  if (pages <= 1){ pag.innerHTML = ""; pag.dataset.sig = ""; return; }
   const p = state.page;
+  // Mejora B (fix): si nada cambió, no re-armar el HTML — así no se pierde
+  // el foco ni lo tipeado en el input "Ir a:" cuando un save dispara render()
+  const sig = `${p}|${pages}|${total}`;
+  if (pag.dataset.sig === sig) return;
+  const prevInput = document.getElementById("goto-page-input");
+  const hadFocus = prevInput && document.activeElement === prevInput;
+  const typedValue = hadFocus ? prevInput.value : null;
   let html = `<button onclick="goPage(${p-1})" ${p===1?'disabled':''} title="Página anterior">‹</button>`;
   const nums = new Set([1, 2, pages-1, pages, p-1, p, p+1]);
   let prev = 0;
@@ -1006,10 +1143,15 @@ function renderPagination(total){
   html += `<button onclick="goPage(${p+1})" ${p===pages?'disabled':''} title="Página siguiente">›</button>`;
   // Mejora B: input para saltar directo a página
   html += `<span class="info" style="margin-left:8px">Ir a:</span>`;
-  html += `<input type="number" id="goto-page-input" min="1" max="${pages}" value="${p}" class="goto-page-input" onkeydown="if(event.key==='Enter'){goPageFromInput(${pages})}">`;
+  html += `<input type="number" id="goto-page-input" min="1" max="${pages}" value="${p}" class="goto-page-input" aria-label="Ir a página" onkeydown="if(event.key==='Enter'){goPageFromInput(${pages})}">`;
   html += `<button onclick="goPageFromInput(${pages})" title="Ir a esa página">Ir</button>`;
   html += `<span class="info">de ${pages} · ${total} productos</span>`;
   pag.innerHTML = html;
+  pag.dataset.sig = sig;
+  if (hadFocus){
+    const inp = document.getElementById("goto-page-input");
+    if (inp){ if (typedValue) inp.value = typedValue; inp.focus(); }
+  }
 }
 
 function goPageFromInput(maxPages){
@@ -1019,7 +1161,19 @@ function goPageFromInput(maxPages){
   goPage(n);
 }
 
-function goPage(n){ state.page = n; render(); window.scrollTo({top:200, behavior:'smooth'}); }
+// Mejora B (fix): la página actual se guarda en el hash de la URL (#p=15),
+// así un F5 no te devuelve a la página 1. replaceState no ensucia el botón "atrás".
+function setPage(n){
+  state.page = n;
+  try { history.replaceState(null, "", "#p=" + n); } catch(e) {}
+}
+
+function goPage(n){
+  const pages = Math.max(1, Math.ceil(filtered().length / PAGE_SIZE));
+  setPage(Math.max(1, Math.min(pages, n)));
+  render();
+  window.scrollTo({top:200, behavior:'smooth'});
+}
 
 function editName(el, code){
   if (el.classList.contains("editing")) return;
@@ -1262,7 +1416,7 @@ function exportCSV(){
     const s = String(c ?? "");
     return /[,";\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
   }).join(",")).join("\n");
-  const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8"});
+  const blob = new Blob(["﻿" + csv], {type: "text/csv;charset=utf-8"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url; a.download = `renatta-catalogo-${new Date().toISOString().slice(0,10)}.csv`;
@@ -1283,9 +1437,9 @@ function toast(msg, type="success"){
 let searchTimer;
 document.getElementById("search").addEventListener("input", e=>{
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(()=>{ state.search = e.target.value; state.page = 1; render(); }, 120);
+  searchTimer = setTimeout(()=>{ state.search = e.target.value; setPage(1); render(); }, 120);
 });
-document.getElementById("filter-cat").addEventListener("change", e=>{ state.category = e.target.value; state.page = 1; render(); });
+document.getElementById("filter-cat").addEventListener("change", e=>{ state.category = e.target.value; setPage(1); render(); });
 
 document.querySelectorAll(".modal-overlay").forEach(o=>{
   o.addEventListener("click", e=>{ if (e.target === o) o.classList.remove("open"); });
@@ -1301,6 +1455,10 @@ async function bootPanel(user) {
   }
   hideLogin();
   document.querySelector(".user-chip").textContent = `👤 ${user.user_metadata?.full_name || user.email}`;
+  // Mejora B (fix): restaurar la página desde el hash (#p=15) para que un F5
+  // no te devuelva a la página 1
+  const m = location.hash.match(/p=(\d+)/);
+  if (m) state.page = Math.max(1, parseInt(m[1], 10));
   state.data = await loadData();
   render();
   // Mejora B: mostrar botón "volver arriba" cuando hay scroll > 300px
