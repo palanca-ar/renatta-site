@@ -784,7 +784,10 @@ function productCard(p){
   const noStock = p.no_stock;
   let photoBlock;
   if (p.photo){
-    const src = `fotos/${p.code_safe}.${p.photo}`;
+    // FIX cambio de foto: p.photo puede ser "png" (formato viejo: foto del repo) o
+    // "CODE-v123.png" (nuevo: subida desde panel post-fix, vive en Blobs).
+    // Si incluye un punto, es el nombre completo.
+    const src = p.photo.includes('.') ? `fotos/${p.photo}` : `fotos/${p.code_safe}.${p.photo}`;
     photoBlock = `<div class="card-photo" data-zoom="${p.code}">
         <img src="${src}" alt="${escapeHTML(p.name)}" loading="lazy" onerror="this.parentNode.classList.add('no-photo');this.parentNode.removeAttribute('data-zoom');this.outerHTML='<span class=&quot;paws-placeholder&quot;>${PAWS_SVG.replace(/"/g,'&quot;')}</span>'">
         <span class="zoom-hint">🔍 Ampliar</span>
@@ -849,8 +852,9 @@ function renderCartList(){
     const qty = state.cart[code];
     const lineTotal = p.price ? p.price * qty : null;
     const lineStr = lineTotal !== null ? fmtAR(lineTotal) : "A consultar";
-    const thumb = p.photo
-      ? `<div class="cart-item-thumb"><img src="fotos/${p.code_safe}.${p.photo}" alt="" onerror="this.parentNode.classList.add('no-photo');this.outerHTML='${PAWS_SVG.replace(/'/g,"\\'")}'"></div>`
+    const thumbSrc = p.photo ? (p.photo.includes('.') ? `fotos/${p.photo}` : `fotos/${p.code_safe}.${p.photo}`) : null;
+    const thumb = thumbSrc
+      ? `<div class="cart-item-thumb"><img src="${thumbSrc}" alt="" onerror="this.parentNode.classList.add('no-photo');this.outerHTML='${PAWS_SVG.replace(/'/g,"\\'")}'"></div>`
       : `<div class="cart-item-thumb no-photo">${PAWS_SVG}</div>`;
     return `
       <div class="cart-item">
@@ -911,7 +915,7 @@ function openLightbox(code){
   const p = PRODUCTS.find(x=>x.code===code);
   if (!p || !p.photo) return;
   logEvent('view_product', code);
-  document.getElementById("lb-img").src = `fotos/${p.code_safe}.${p.photo}`;
+  document.getElementById("lb-img").src = p.photo.includes('.') ? `fotos/${p.photo}` : `fotos/${p.code_safe}.${p.photo}`;
   document.getElementById("lb-img").alt = p.name;
   document.getElementById("lb-caption").textContent = `${p.name} · ${p.code}`;
   document.getElementById("lightbox").classList.add("open");
