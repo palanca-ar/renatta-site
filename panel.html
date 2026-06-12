@@ -1079,9 +1079,19 @@ function updateStats(){
   document.getElementById("s-nostock").textContent = d.filter(p=>p.no_stock).length;
 }
 
+// FIX cambio de foto: el campo p.photo tiene 2 formatos posibles
+//   - VIEJO (catalogo inicial del seed): "png" / "jpg" → foto en /fotos/CODE.ext del repo
+//   - NUEVO (subido desde panel post-fix): "203-v1781020000.jpg" → foto en Blobs, servida por get-photo
+// Detectamos cuál es: si p.photo incluye un punto, es el nombre completo (formato nuevo).
+function photoSrc(p){
+  if (!p.photo) return null;
+  return p.photo.includes('.') ? `fotos/${p.photo}` : `fotos/${p.code_safe}.${p.photo}`;
+}
+
 function row(p){
-  const photo = p.photo
-    ? `<img src="fotos/${p.code_safe}.${p.photo}" alt="" onerror="this.parentNode.classList.add('no-photo');this.outerHTML='${PAWS.replace(/'/g,"\\'")}'">`
+  const src = photoSrc(p);
+  const photo = src
+    ? `<img src="${src}" alt="" onerror="this.parentNode.classList.add('no-photo');this.outerHTML='${PAWS.replace(/'/g,"\\'")}'">`
     : PAWS;
   const photoClass = p.photo ? "" : "no-photo";
   const stockClass = p.no_stock ? "no-stock" : "available";
@@ -1312,7 +1322,9 @@ function changePhoto(code){
       const r = await fetch("/api/upload-photo", { method:"POST", headers: { authorization: `Bearer ${token}` }, body: form });
       if (r.ok) {
         const data = await r.json();
-        p.photo = data.ext;
+        // FIX cambio de foto: usar el photoKey versionado si viene; fallback al ext viejo
+        p.photo = data.photoKey || data.ext;
+        if (data.photoKey) p.code_safe = String(p.code).replace(/[\\\/<>:"|?*]/g, "_");
         render();
         toast(`✅ Foto cambiada en ${p.name}`, "success");
       } else {
@@ -1378,7 +1390,8 @@ async function saveProduct(){
         const ru = await fetch("/api/upload-photo", { method:"POST", headers: { authorization: `Bearer ${token}` }, body: form });
         if (ru.ok) {
           const data = await ru.json();
-          newProd.photo = data.ext;
+          // FIX cambio de foto: usar photoKey versionado si viene (formato nuevo)
+          newProd.photo = data.photoKey || data.ext;
         }
       } catch(err) { toast(`⚠️ Foto: ${err.message}`, "error"); }
     }
