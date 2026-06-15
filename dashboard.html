@@ -339,8 +339,8 @@ iframe#netlify-identity-widget { z-index: 9999 !important; }
     <h2>Resumen <span class="sub">Datos del 7 de mayo al 6 de junio</span></h2>
     <div class="range-toggle">
       <button data-range="day">Hoy</button>
-      <button data-range="week" class="active">Esta semana</button>
-      <button data-range="month">Este mes</button>
+      <button data-range="week">Esta semana</button>
+      <button data-range="month" class="active">Este mes</button>
     </div>
   </div>
 
@@ -485,11 +485,17 @@ function hasAdminRole(user) {
   return roles.includes(REQUIRED_ROLE);
 }
 
-async function fetchMetrics(){
+// FIX dashboard: fetchMetrics ahora acepta `days` como parámetro (1/7/30).
+// Antes estaba hardcodeado a 30 y el selector Hoy/Semana/Mes solo cambiaba
+// la clase visual sin actualizar los datos.
+async function fetchMetrics(days = 30){
   const user = identity.currentUser();
   if (!user || !hasAdminRole(user)) return null;
   const token = await user.jwt();
-  const r = await fetch("/api/metrics?days=30", { headers: { authorization: `Bearer ${token}` } });
+  const r = await fetch(`/api/metrics?days=${days}&_t=${Date.now()}`, {
+    headers: { authorization: `Bearer ${token}` },
+    cache: "no-store"
+  });
   if (!r.ok) return null;
   return await r.json();
 }
@@ -628,10 +634,18 @@ function initIdentity(){
 if (document.readyState === 'complete' && window.netlifyIdentity) initIdentity();
 else window.addEventListener('load', initIdentity);
 
+// FIX dashboard: el listener ahora llama a loadRange() para refetchear y
+// re-renderear con el rango elegido. Antes solo cambiaba la clase visual.
+const RANGE_DAYS = { day: 1, week: 7, month: 30 };
+async function loadRange(days){
+  const m = await fetchMetrics(days);
+  if (m) { DATA = adaptMetrics(m); renderDashboard(); }
+}
 document.querySelectorAll(".range-toggle button").forEach(b=>{
   b.addEventListener("click", ()=>{
     document.querySelectorAll(".range-toggle button").forEach(x=>x.classList.remove("active"));
     b.classList.add("active");
+    loadRange(RANGE_DAYS[b.dataset.range] || 30);
   });
 });
 </script>
