@@ -36,7 +36,9 @@ export default async (req, context) => {
   //   - Formato NUEVO: "203-v1781020000.jpg" (nombre completo) → render usa fotos/${photo} directo
   // Los renders detectan el formato porque el nuevo siempre incluye un punto en p.photo.
   const dataStore = getStore("renatta-data");
-  let products = (await dataStore.get("products", { type: "json" })) || [];
+  // FIX RAÍZ: consistency strong evita pisar cambios concurrentes de save-product
+  // (mismo race condition que tenía save-product hasta hoy).
+  let products = (await dataStore.get("products", { type: "json", consistency: "strong" })) || [];
   const idx = products.findIndex(p => p.code === code);
   if (idx >= 0) {
     products[idx].photo = photoKey;
