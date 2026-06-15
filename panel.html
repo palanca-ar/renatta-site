@@ -622,6 +622,20 @@ iframe#netlify-identity-widget { z-index: 9999 !important; }
 }
 #lost-banner .lost-retry { background: var(--white); color: var(--red); }
 #lost-banner .lost-dismiss { background: rgba(0,0,0,0.25); color: var(--white); }
+
+/* Herramientas masivas — actualizar precios por % en bloque (portado del kit) */
+.tools-block { background: var(--white); border: 1px solid var(--gray-line); border-radius: 12px; margin: 0 0 16px; overflow: hidden; }
+.tools-block > summary { cursor: pointer; padding: 14px 18px; font-weight: 600; font-family: 'Fredoka', sans-serif; list-style: none; user-select: none; }
+.tools-block > summary::-webkit-details-marker { display: none; }
+.tools-block > summary::before { content: '▸ '; color: var(--gray); }
+.tools-block[open] > summary::before { content: '▾ '; }
+.tools-grid { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 0 18px 18px; }
+.tool-card { border: 1px solid var(--gray-line); border-radius: 10px; padding: 14px; background: var(--gray-bg); }
+.tool-card h4 { margin: 0 0 4px; font-family: 'Fredoka', sans-serif; color: var(--dark); font-size: 15px; }
+.tool-hint { margin: 0 0 10px; font-size: 12px; color: var(--gray); line-height: 1.4; }
+.tool-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.tool-row input[type=number], .tool-row .filter-select { padding: 8px 10px; border: 1px solid var(--gray-line); border-radius: 8px; font: inherit; }
+.tool-row input[type=number]:focus, .tool-row .filter-select:focus { border-color: var(--red); outline: none; }
 </style>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
@@ -710,6 +724,24 @@ iframe#netlify-identity-widget { z-index: 9999 !important; }
     <span>✅ <b id="s-stock">0</b> disponibles</span>
     <span>❌ <b id="s-nostock">0</b> sin stock</span>
   </div>
+
+  <!-- Herramientas masivas: actualizar precios por % (portado del kit creador-de-listas) -->
+  <details class="tools-block" id="tools-block">
+    <summary>🛠️ Herramientas</summary>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <h4>Actualizar precios por %</h4>
+        <p class="tool-hint">Subí o bajá precios en bloque. Negativo = bajar (ej: -10). Productos con precio "Consultar" no se tocan.</p>
+        <div class="tool-row">
+          <select id="bulk-scope" class="filter-select" style="min-width:200px">
+            <option value="__all__">Toda la lista</option>
+          </select>
+          <input id="bulk-pct" type="number" step="0.1" placeholder="% (ej: 10 o -10)" inputmode="decimal" style="max-width:180px">
+          <button class="btn-primary" onclick="bulkApplyPct()">Aplicar</button>
+        </div>
+      </div>
+    </div>
+  </details>
 
   <div class="products-table">
     <div class="table-head">
@@ -1114,6 +1146,7 @@ function row(p){
 
 function render(){
   updateStats();
+  fillBulkScope(); // refresca el dropdown de herramientas si hay categorías nuevas
   const list = filtered();
   const rows = document.getElementById("rows");
   if (!list.length){
@@ -1495,6 +1528,56 @@ document.querySelectorAll(".modal-overlay").forEach(o=>{
 document.addEventListener("keydown", e=>{
   if (e.key === "Escape") document.querySelectorAll(".modal-overlay.open").forEach(m=>m.classList.remove("open"));
 });
+
+// === Herramientas masivas: actualizar precios por % (portado del kit) ===
+// Llena el selector con "Toda la lista" + una opción por cada categoría viva.
+// Se invoca desde render() para que las categorías nuevas aparezcan al toque.
+function fillBulkScope(){
+  const sel = document.getElementById("bulk-scope");
+  if (!sel) return;
+  const cur = sel.value || "__all__";
+  const cats = [...new Set(state.data.map(p => p.category).filter(Boolean))].sort();
+  sel.innerHTML = `<option value="__all__">Toda la lista</option>` +
+    cats.map(c => `<option value="cat:${escapeHTML(c)}">Categoría: ${escapeHTML(c)}</option>`).join("");
+  if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
+}
+
+function productsInScope(scope){
+  if (!scope || scope === "__all__") return state.data.slice();
+  if (scope.startsWith("cat:")){
+    const cat = scope.slice(4);
+    return state.data.filter(p => (p.category || "") === cat);
+  }
+  return [];
+}
+
+// price = round(price*(1+pct/100)). price null ("Consultar") no se toca.
+// Cada cambio se persiste por la cola existente (callApi("update")).
+async function bulkApplyPct(){
+  const scope = (document.getElementById("bulk-scope") || {}).value || "__all__";
+  const raw = (document.getElementById("bulk-pct") || {}).value;
+  const pct = parseFloat(raw);
+  if (isNaN(pct)){ toast("⚠️ Ingresá un porcentaje (ej: 10 o -10)", "error"); return; }
+  if (pct === 0){ toast("⚠️ 0% no cambia nada", "error"); return; }
+  const list = productsInScope(scope).filter(p => p.price != null);
+  if (!list.length){ toast("No hay productos con precio en ese alcance", "error"); return; }
+  const scopeLabel = scope === "__all__" ? "toda la lista" : `la categoría "${scope.slice(4)}"`;
+  const verb = pct > 0 ? "Subir" : "Bajar";
+  if (!confirm(`${verb} ${Math.abs(pct)}% el precio de ${list.length} producto(s) de ${scopeLabel}?\n\n"Consultar" no se modifica.\nLos cambios se guardan en orden (la cola ya gestionada).`)) return;
+  const factor = 1 + pct/100;
+  let n = 0;
+  for (const p of list){
+    const newPrice = Math.round(p.price * factor);
+    if (newPrice === p.price) continue;
+    p.price = newPrice < 0 ? 0 : newPrice;
+    callApi("update", { product: p });
+    n++;
+  }
+  render();
+  // Limpiar el input para evitar aplicar el mismo % dos veces sin querer
+  const inp = document.getElementById("bulk-pct"); if (inp) inp.value = "";
+  toast(`✅ ${n} precio(s) actualizado(s) (${pct>0?"+":""}${pct}%)`, "success");
+}
 
 async function bootPanel(user) {
   if (!hasAdminRole(user)) {
