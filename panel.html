@@ -1101,7 +1101,7 @@ function row(p){
     <div class="product-row ${p.no_stock?'no-stock-row':''}" data-code="${escapeHTML(p.code)}">
       <div class="thumb ${photoClass}" onclick="changePhoto('${escapeHTML(p.code)}')">${photo}<span class="hover-edit">📷 Cambiar</span></div>
       <div class="cell-name" onclick="editName(this, '${escapeHTML(p.code)}')">${escapeHTML(p.name)}</div>
-      <div class="cell-code"><span class="cell-code">${escapeHTML(p.code)}</span></div>
+      <div class="cell-code"><span class="cell-code" onclick="editCode(this, '${escapeHTML(p.code)}')" title="Click para editar el código" style="cursor:pointer">${escapeHTML(p.code)}</span></div>
       <div class="cell-cat"><select onchange="changeCategory('${escapeHTML(p.code)}', this.value)">${catOptions}</select></div>
       <div class="cell-price-wrap"><span class="cell-price ${p.price==null?'consult':''}" onclick="editPrice(this, '${escapeHTML(p.code)}')">${p.price!=null ? fmtAR(p.price) : 'Consultar'}</span></div>
       <div class="cell-stock"><span class="stock-toggle ${stockClass}" onclick="toggleStock('${escapeHTML(p.code)}')"><span class="stock-dot"></span>${stockLabel}</span></div>
@@ -1205,6 +1205,41 @@ function editName(el, code){
     }
     el.classList.remove("editing");
     el.textContent = v || old;
+  };
+  inp.addEventListener("blur", save);
+  inp.addEventListener("keydown", e=>{
+    if (e.key === "Enter") inp.blur();
+    if (e.key === "Escape"){ el.classList.remove("editing"); el.textContent = old; }
+  });
+}
+
+// FIX cambio de código (portado del template del kit):
+// Permite a Renatta cambiar el código de un producto sin tener que borrarlo y
+// recrearlo. El backend ya lo soporta vía `original_code` en el body.
+function editCode(el, code){
+  if (el.classList.contains("editing")) return;
+  el.classList.add("editing");
+  const old = el.textContent;
+  el.innerHTML = `<input type="text" value="${escapeHTML(old)}">`;
+  const inp = el.querySelector("input");
+  inp.focus(); inp.select();
+  const save = async () => {
+    const v = inp.value.trim().replace(/\s+/g, "-");
+    el.classList.remove("editing");
+    if (!v){ toast("⚠️ El código no puede estar vacío", "error"); el.textContent = old; return; }
+    if (v === old){ el.textContent = old; return; }
+    if (state.data.some(x => x.code === v)){ toast(`⚠️ Código "${v}" ya existe`, "error"); el.textContent = old; return; }
+    const p = state.data.find(x => x.code === code);
+    if (!p){ el.textContent = old; return; }
+    const updated = { ...p, code: v, code_safe: v.replace(/[\\\/<>:"|?*]/g, "_") };
+    const r = await callApi("update", { product: updated, original_code: old });
+    if (r){
+      Object.assign(p, updated);
+      render();
+      toast(`✅ Código cambiado: ${old} → ${v}`, "success");
+    } else {
+      el.textContent = old;
+    }
   };
   inp.addEventListener("blur", save);
   inp.addEventListener("keydown", e=>{
