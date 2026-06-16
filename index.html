@@ -570,14 +570,33 @@ footer a:hover { color: var(--yellow); opacity: 1; }
 }
 
 @media (max-width: 600px) {
-  .hero h1 { font-size: 22px; }
-  .hero-logo { width: 140px; height: 140px; }
-  .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+  /* FIX mobile (Jun 16): hero gigante + chips wrap tapaban TODO el catálogo en cel.
+     Solución: hero compacto + chips en scroll horizontal de una sola fila. */
+  .hero { padding: 16px 12px 12px; }
+  .hero-logo { width: 96px; height: 96px; margin-bottom: 6px; }
+  .hero h1 { font-size: 20px; }
+  .hero p { font-size: 12px; line-height: 1.35; }
+  .ribbon { padding: 6px 12px; font-size: 12px; }
+  .sticky-inner { padding: 8px 12px; gap: 6px; }
+  /* chips en una sola fila con scroll horizontal */
+  .chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin: 0 -12px;
+    padding: 2px 12px;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex-shrink: 0; font-size: 12px; padding: 5px 10px; }
+  .toggle { font-size: 12px; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
   .card-name { font-size: 13px; }
   .card-price { font-size: 16px; }
   .btn-cart { padding: 10px 12px; }
   .btn-cart span.label { display: none; }
-  .topbar { font-size: 11px; gap: 10px; }
+  .topbar { font-size: 11px; gap: 10px; padding: 6px 12px; }
   .category-title { font-size: 18px; padding: 8px 14px; }
   .cart-panel { width: 100vw; }
   .lightbox-close { top: 12px; right: 12px; }
