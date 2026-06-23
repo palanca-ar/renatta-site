@@ -1617,41 +1617,4 @@ async function bootPanel(user) {
   if (m) state.page = Math.max(1, parseInt(m[1], 10));
   state.data = await loadData();
   render();
-  // Mejora B: mostrar botón "volver arriba" cuando hay scroll > 300px
-  window.addEventListener("scroll", () => {
-    const btn = document.getElementById("scroll-top-btn");
-    if (btn) btn.classList.toggle("visible", window.scrollY > 300);
-  }, { passive: true });
-}
-
-identity.on("init", user => {
-  if (user) bootPanel(user);
-  else showLogin();
-});
-identity.on("login", user => {
-  identity.close();
-  bootPanel(user);
-});
-identity.on("logout", () => showLogin("Iniciá sesión para administrar el catálogo"));
-// Inicializar Identity después de que la página esté completamente cargada
-function initIdentity(){
-  try {
-    identity.init();
-  } catch(e) { console.error('Identity init error:', e); }
-  // Backup: chequear currentUser por si el evento init no se dispara
-  setTimeout(() => {
-    const u = identity.currentUser();
-    if (u && loginScreen.style.display !== 'none') {
-      // ya hay user logueado, ocultar el login
-      const fn = (typeof bootPanel !== 'undefined') ? bootPanel : (typeof bootDashboard !== 'undefined' ? bootDashboard : null);
-      if (fn) fn(u);
-    } else if (!u && loginScreen.style.display === 'none') {
-      showLogin();
-    }
-  }, 800);
-}
-if (document.readyState === 'complete' && window.netlifyIdentity) initIdentity();
-else window.addEventListener('load', initIdentity);
-</script>
-</body>
-</html>
+  // Mejora B: mostrar botón "vo
