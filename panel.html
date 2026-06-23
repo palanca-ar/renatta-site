@@ -863,6 +863,33 @@ const PAGE_SIZE = 25;
 const fmtAR = n => n != null ? new Intl.NumberFormat("es-AR", {style:"currency", currency:"ARS", maximumFractionDigits: n%1===0 ? 0 : 2}).format(n) : "Consultar";
 const escapeHTML = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
+// FIX bug Renatta "cambio el precio y queda igual":
+// parseFloat("1.500") devuelve 1.5 (interpreta el punto como decimal de JS).
+// En Argentina "1.500" significa MIL QUINIENTOS. Resultado del bug: Renatta
+// queria poner $1.500 y se guardaba $1,50, despues veia el panel y decia
+// "se queda igual" porque no entendia que se habia guardado un valor raro.
+// parseArPrice detecta tres formatos:
+//   "1500"        -> 1500   (sin separadores)
+//   "1.500"       -> 1500   (punto de miles AR)
+//   "1.234.567"   -> 1234567 (punto de miles multiple AR)
+//   "1500,50"     -> 1500.50 (coma decimal AR)
+//   "1.500,50"    -> 1500.50 (AR full)
+//   "1500.50"     -> 1500.50 (formato JS - lo respeta)
+// Devuelve null si el string esta vacio, o NaN si no se puede parsear.
+function parseArPrice(raw){
+  raw = (raw == null ? "" : String(raw)).trim();
+  if (!raw) return null;
+  if (raw.includes(",")){
+    // AR con decimal: el ultimo separador es coma. Puntos = miles.
+    raw = raw.replace(/\./g, "").replace(",", ".");
+  } else if (/^\d{1,3}(\.\d{3})+$/.test(raw)) {
+    // AR sin decimal pero con puntos de miles (1.500 / 1.234.567)
+    raw = raw.replace(/\./g, "");
+  }
+  const v = parseFloat(raw);
+  return isFinite(v) ? v : NaN;
+}
+
 const identity = window.netlifyIdentity;
 const loginScreen = document.getElementById("login-screen");
 const showLogin = (msg) => {
@@ -1290,20 +1317,18 @@ function editPrice(el, code){
   const inp = el.querySelector("input");
   inp.focus(); inp.select();
   const save = async () => {
-    let raw = inp.value.trim();
-    let v = null;
-    if (raw !== "") {
-      // Detectar formato: argentino ($1.234,56 / 1.234,56) vs JS (1234.56)
-      // Argentino tiene COMA como decimal. Si hay coma, asumir argentino.
-      // Si no hay coma pero hay punto, asumir JS estándar.
-      if (raw.includes(",")) {
-        // Argentino: quitar puntos de miles, cambiar coma por punto
-        raw = raw.replace(/\./g,"").replace(",",".");
+    const raw = inp.value.trim();
+    // FIX parser AR: "1.500" -> 1500 (antes daba 1.5 por parseFloat de JS)
+    const v = parseArPrice(raw);
+    if (raw === "" || (v !== null && !isNaN(v))){
+      // Guarda de "valor sospechosamente chico vs el viejo": si el nuevo precio
+      // es menos del 10% del viejo y no es null, advertir. Atrapa errores de
+      // tipeo si el parser fallara en el futuro.
+      if (v != null && oldPrice != null && v > 0 && v < oldPrice * 0.1) {
+        if (!confirm(`Vas a guardar ${fmtAR(v)} (antes era ${fmtAR(oldPrice)}). ¿Es correcto?`)) {
+          render(); return;
+        }
       }
-      // Si no tiene coma, dejarlo como está (el punto ya es decimal en JS)
-      v = parseFloat(raw);
-    }
-    if (raw === "" || !isNaN(v)){
       p.price = v;
       const r = await callApi("update", { product: p });
       if (r) toast(`💰 Precio actualizado`, "success");
@@ -1433,11 +1458,11 @@ async function saveProduct(){
   const code = document.getElementById("f-code").value.trim();
   if (!name || !code){ toast("⚠️ Nombre y código son obligatorios", "error"); return; }
   if (state.data.some(p=>p.code===code)){ toast(`⚠️ Código "${code}" ya existe`, "error"); return; }
-  let priceRaw = document.getElementById("f-price").value.trim();
-  let price = null;
-  if (priceRaw !== "") {
-    if (priceRaw.includes(",")) priceRaw = priceRaw.replace(/\./g,"").replace(",",".");
-    price = parseFloat(priceRaw);
+  // FIX parser AR: usar parseArPrice para soportar "1.500" como 1500
+  let price = parseArPrice(document.getElementById("f-price").value);
+  if (price !== null && (isNaN(price) || price < 0)) {
+    toast("⚠️ Precio inválido. Ej: 1500 o 1.500 o 1.500,50", "error");
+    return;
   }
   const cat = document.getElementById("f-cat").value;
   const no_stock = document.getElementById("f-stock").value === "true";
