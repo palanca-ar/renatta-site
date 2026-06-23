@@ -21,6 +21,16 @@ export default async (req, context) => {
   const { action, product, code, original_code } = body;
   if (!action) return errorResponse("missing 'action' (create|update|delete)");
 
+  // FIX DEFENSIVO bug Renatta "cambio el precio y queda igual" (Jun 23 2026):
+  // El field `price_raw` ("$1.234,00" como string) ya no se usa para renderizar
+  // ni en panel ni en index publico — ambos usan fmtAR(p.price). Pero quedo
+  // en el Blob de muchos productos por bulks % viejos, con valores desfasados
+  // respecto a `price`. Limpiamos el payload entrante y cuando hagamos update,
+  // tambien lo limpiamos del producto persistido para irlos saneando uno a uno.
+  if (product && typeof product === "object") {
+    delete product.price_raw;
+  }
+
   const store = getStore("renatta-data");
   // FIX: consistency strong evita leer una versión vieja del blob cuando hay
   // escrituras concurrentes o muy seguidas. Sin esto, dos updates al mismo producto
@@ -41,11 +51,13 @@ export default async (req, context) => {
       if (products.some(p => p.code === product.code)) return errorResponse("code already exists", 409);
       product.code_safe = product.code.replace(/[\\/<>:"|?*]/g, "_");
       products[idx] = { ...products[idx], ...product };
+      delete products[idx].price_raw; // limpieza retroactiva del producto editado
     } else {
       const idx = products.findIndex(p => p.code === product.code);
       if (idx < 0) return errorResponse(`code "${product.code}" not found`, 404);
       product.code_safe = product.code.replace(/[\\/<>:"|?*]/g, "_");
       products[idx] = { ...products[idx], ...product };
+      delete products[idx].price_raw; // limpieza retroactiva del producto editado
     }
   } else if (action === "delete") {
     const c = code || product?.code;
