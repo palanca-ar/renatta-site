@@ -715,6 +715,7 @@ iframe#netlify-identity-widget { z-index: 9999 !important; }
       <option>Snacks y Varios</option>
     </select>
     <button class="btn-ghost" onclick="exportCSV()" title="Descargar CSV">📥 Exportar CSV</button>
+    <button class="btn-ghost" onclick="openAjustes()" title="Colores y textos de la lista">⚙️ Ajustes</button>
     <button class="btn-primary" onclick="openAddModal()">＋ Agregar producto</button>
   </div>
 
@@ -845,6 +846,45 @@ iframe#netlify-identity-widget { z-index: 9999 !important; }
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeDeleteModal()">Cancelar</button>
       <button class="btn-primary" style="background:var(--red)" onclick="confirmDelete()">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Ajustes de la lista (colores + textos) -->
+<div class="modal-overlay" id="ajustes-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>⚙️ Ajustes de la lista</h2>
+      <button class="modal-close" onclick="closeAjustes()">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--gray);margin:0 0 14px">
+        Cambiá los colores y los textos de la lista. Los cambios se ven en el catálogo
+        al instante. Si dejás un campo vacío, queda el texto original.
+      </p>
+      <div class="field">
+        <label>Lema / subtítulo</label>
+        <input id="set-lema-in" type="text" placeholder="Ej: Distribuidora de accesorios para mascotas">
+      </div>
+      <div class="field">
+        <label>Aviso / banner</label>
+        <input id="set-aviso-in" type="text" placeholder="Ej: Los precios están sujetos a modificación">
+      </div>
+      <div class="field">
+        <label>Dirección / zona (sin el emoji)</label>
+        <input id="set-direccion-in" type="text" placeholder="Ej: Salta 1866, Lanús Este">
+      </div>
+      <div class="row-2">
+        <div class="field"><label>Color principal</label><input id="set-color-primary-in" type="color"></div>
+        <div class="field"><label>Color de acento</label><input id="set-color-accent-in" type="color"></div>
+      </div>
+      <div class="field" style="margin-top:-2px">
+        <button type="button" class="btn-ghost" onclick="resetColors()" style="font-size:12px;padding:6px 10px">↺ Volver a los colores originales</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeAjustes()">Cancelar</button>
+      <button class="btn-primary" id="ajustes-save-btn" onclick="saveAjustes()">Guardar</button>
     </div>
   </div>
 </div>
@@ -1652,6 +1692,65 @@ function initIdentity(){
 }
 if (document.readyState === 'complete' && window.netlifyIdentity) initIdentity();
 else window.addEventListener('load', initIdentity);
+
+// === Ajustes de la lista: colores y textos editables ===
+// Los ajustes viven en un blob aparte ("settings"), separado del catálogo, así que
+// tocar colores o textos no interfiere con los productos ni con la cola de guardado.
+const DEF_PRIMARY = "#d62828", DEF_ACCENT = "#f4b731";
+
+function openAjustes(){
+  document.getElementById("ajustes-modal").classList.add("open");
+  fetch("/api/get-settings", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : {})
+    .then(s => {
+      s = s || {};
+      document.getElementById("set-lema-in").value = s.lema || "";
+      document.getElementById("set-aviso-in").value = s.aviso || "";
+      document.getElementById("set-direccion-in").value = s.direccion || "";
+      document.getElementById("set-color-primary-in").value = s.colorPrimary || DEF_PRIMARY;
+      document.getElementById("set-color-accent-in").value = s.colorAccent || DEF_ACCENT;
+    })
+    .catch(() => {});
+}
+
+function closeAjustes(){ document.getElementById("ajustes-modal").classList.remove("open"); }
+
+// Vuelve a los colores de marca originales y guarda en el acto, para que se vea el efecto.
+function resetColors(){
+  document.getElementById("set-color-primary-in").value = DEF_PRIMARY;
+  document.getElementById("set-color-accent-in").value = DEF_ACCENT;
+  saveAjustes();
+}
+
+async function saveAjustes(){
+  const user = identity.currentUser();
+  if (!user){ toast("⚠️ Sesión expirada", "error"); return; }
+  if (!hasAdminRole(user)){ toast("⚠️ Sin permisos", "error"); return; }
+  const btn = document.getElementById("ajustes-save-btn");
+  const old = btn.textContent;
+  btn.disabled = true; btn.textContent = "Guardando…";
+  const settings = {
+    lema: document.getElementById("set-lema-in").value.trim(),
+    aviso: document.getElementById("set-aviso-in").value.trim(),
+    direccion: document.getElementById("set-direccion-in").value.trim(),
+    colorPrimary: document.getElementById("set-color-primary-in").value,
+    colorAccent: document.getElementById("set-color-accent-in").value
+  };
+  try {
+    const token = await user.jwt();
+    const r = await fetch("/api/save-settings", {
+      method: "POST",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${token}` },
+      body: JSON.stringify({ settings })
+    });
+    if (r.ok){ toast("✅ Ajustes guardados — ya se ven en la lista", "success"); closeAjustes(); }
+    else { const e = await r.json().catch(()=>({})); toast(`⚠️ ${e.error || "No se pudo guardar"}`, "error"); }
+  } catch (e) {
+    toast("⚠️ No se pudo guardar (sin conexión)", "error");
+  } finally {
+    btn.disabled = false; btn.textContent = old;
+  }
+}
 </script>
 </body>
 </html>
